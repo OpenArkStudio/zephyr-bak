@@ -123,7 +123,7 @@ namespace asio2
 		 */
 		virtual void stop() override
 		{
-			if (this->is_start())
+			if (this->is_started())
 			{
 				m_state = state::stopping;
 
@@ -174,9 +174,17 @@ namespace asio2
 		/**
 		 * @function : whether the client is started
 		 */
-		virtual bool is_start()
+		virtual bool is_started() override
 		{
-			return ((m_state == state::started) && m_socket.is_open());
+			return ((m_state >= state::started) && m_socket.is_open());
+		}
+
+		/**
+		 * @function : check whether the connection is stopped
+		 */
+		virtual bool is_stopped() override
+		{
+			return ((m_state == state::stopped) && !m_socket.is_open());
 		}
 
 		/**
@@ -184,7 +192,7 @@ namespace asio2
 		 */
 		virtual bool send(std::shared_ptr<buffer<uint8_t>> buf_ptr) override
 		{
-			if (is_start() && buf_ptr)
+			if (is_started() && buf_ptr)
 			{
 				// must use strand.post to send data.why we should do it like this ? see udp_session._post_send.
 				try
@@ -305,12 +313,14 @@ namespace asio2
 					_post_recv(std::move(this_ptr), std::make_shared<buffer<uint8_t>>(
 						m_url_parser_ptr->get_recv_buffer_size(), malloc_recv_buffer(m_url_parser_ptr->get_recv_buffer_size()), 0));
 				});
+
+				m_state = state::running;
 			}
 		}
 
 		virtual void _post_recv(std::shared_ptr<connection_impl> this_ptr, std::shared_ptr<buffer<uint8_t>> buf_ptr)
 		{
-			if (is_start())
+			if (is_started())
 			{
 				if (buf_ptr->remain() > 0)
 				{
@@ -335,39 +345,42 @@ namespace asio2
 
 		virtual void _handle_recv(const boost::system::error_code & ec, std::size_t bytes_recvd, std::shared_ptr<connection_impl> this_ptr, std::shared_ptr<buffer<uint8_t>> buf_ptr)
 		{
-			if (!ec)
+			if (is_started())
 			{
-				// every times recv data,we update the last active time.
-				reset_last_active_time();
+				auto use_count = buf_ptr.use_count();
+				if (!ec)
+				{
+					// every times recv data,we update the last active time.
+					reset_last_active_time();
 
-				if (bytes_recvd == 0)
-				{
-					// recvd data len is 0,may be heartbeat packet.
-				}
-				else if (bytes_recvd > 0)
-				{
 					buf_ptr->write_bytes(bytes_recvd);
+
+					_fire_recv(buf_ptr);
+				}
+				else
+				{
+					set_last_error(ec.value());
+
+					if (ec == boost::asio::error::operation_aborted)
+						return;
 				}
 
-				_fire_recv(buf_ptr);
-
-				auto recv_buf = std::make_shared<buffer<uint8_t>>(m_url_parser_ptr->get_recv_buffer_size(),
-					malloc_recv_buffer(m_url_parser_ptr->get_recv_buffer_size()), 0);
-
-				_post_recv(std::move(this_ptr), std::move(recv_buf));
-			}
-			else
-			{
-				set_last_error(ec.value());
-
-				// close this client
-				this->stop();
+				if (use_count == buf_ptr.use_count())
+				{
+					buf_ptr->reset();
+					this->_post_recv(std::move(this_ptr), std::move(buf_ptr));
+				}
+				else
+				{
+					this->_post_recv(std::move(this_ptr), std::make_shared<buffer<uint8_t>>(
+						m_url_parser_ptr->get_recv_buffer_size(), malloc_recv_buffer(m_url_parser_ptr->get_recv_buffer_size()), 0));
+				}
 			}
 		}
 
 		virtual void _post_send(std::shared_ptr<connection_impl> this_ptr, std::shared_ptr<buffer<uint8_t>> buf_ptr)
 		{
-			if (is_start())
+			if (is_started())
 			{
 				boost::system::error_code ec;
 				m_socket.send(boost::asio::buffer(buf_ptr->read_begin(), buf_ptr->size()), 0, ec);
@@ -376,7 +389,6 @@ namespace asio2
 				if (ec)
 				{
 					PRINT_EXCEPTION;
-					this->stop();
 				}
 			}
 			else

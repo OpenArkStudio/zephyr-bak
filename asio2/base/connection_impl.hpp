@@ -50,6 +50,8 @@ namespace asio2
 
 	class connection_impl : public std::enable_shared_from_this<connection_impl>
 	{
+		friend class client_impl;
+
 	public:
 		/**
 		 * @construct
@@ -96,7 +98,12 @@ namespace asio2
 		/**
 		 * @function : check whether the connection is started
 		 */
-		virtual bool is_start() = 0;
+		virtual bool is_started() = 0;
+
+		/**
+		 * @function : check whether the connection is stopped
+		 */
+		virtual bool is_stopped() = 0;
 
 		/**
 		 * @function : send data
