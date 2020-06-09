@@ -1,5 +1,5 @@
 # asio2
-### [README in English](https://github.com/zhllxt/asio2/blob/master/README.en.md) 
+### [README in English](README.en.md) 
 A open source cross-platform c++ library for network programming based on asio,support for tcp,udp,http,rpc,ssl and so on.
 
 <a href="https://996.icu"><img src="https://img.shields.io/badge/link-996.icu-red.svg" alt="996.icu" /></a>
