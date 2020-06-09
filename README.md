@@ -11,7 +11,7 @@ A open source cross-platform c++ library for network programming based on asio,s
 * TCP支持各种数据拆包功能(单个字符或字符串或用户自定义协议等);实现了TCP的数据报模式(类似WEBSOCKET);
 * 支持windows,linux,32位,64位;
 * 基于C++17,基于asio(boost::asio或独立asio均可,若需要HTTP功能必须使用boost::asio);
-* header only 方式,无需编译,只需在工程的Include包含目录中添加asio2路径,然后在源码中#include <asio2/asio2.hpp>包含头文件即可;
+* header only 方式,无需编译,只需在工程的Include包含目录中添加asio2路径,然后在源码中#include <zephyr/asio2.hpp>包含头文件即可;
 * demo目录包含大量的示例工程(工程基于VS2017创建),各种使用方法请参考示例代码;
 
 ## 与其它框架的一点区别:
@@ -348,7 +348,7 @@ public:
 ```
 
 ## SSL:
-##### TCP/HTTP/WEBSOCKET均支持SSL功能(需要在config.hpp中将#define ASIO2_USE_SSL宏定义放开)
+##### TCP/HTTP/WEBSOCKET均支持SSL功能(需要在config.hpp中将#define ZEPHYR_USE_SSL宏定义放开)
 ```c++
 asio2::tcps_server server;
 // 从内存字符串加载SSL证书(具体请查看demo代码)
