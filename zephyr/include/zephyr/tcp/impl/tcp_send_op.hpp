@@ -25,7 +25,7 @@
 #include <zephyr/base/detail/condition_wrap.hpp>
 #include <zephyr/base/detail/buffer_wrap.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, bool isSession>
 	class tcp_send_op

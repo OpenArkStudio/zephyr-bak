@@ -41,7 +41,7 @@
 #include <zephyr/base/component/user_timer_cp.hpp>
 #include <zephyr/base/component/post_cp.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class session_t>
 	class server_impl_t
@@ -223,7 +223,7 @@ namespace asio2::detail
 		 * @function :
 		 * @param    : fn - The handler to be called for each session.
 		 * Function signature :
-		 * void(std::shared_ptr<asio2::xxx_session>& session_ptr)
+		 * void(std::shared_ptr<zephyr::xxx_session>& session_ptr)
 		 */
 		inline derived_t & foreach_session(const std::function<void(std::shared_ptr<session_t>&)> & fn)
 		{
@@ -235,8 +235,8 @@ namespace asio2::detail
 		 * @function : find the session by user custom role
 		 * @param    : fn - The handler to be called when search the session.
 		 * Function signature :
-		 * bool(std::shared_ptr<asio2::xxx_session>& session_ptr)
-		 * @return   : std::shared_ptr<asio2::xxx_session>
+		 * bool(std::shared_ptr<zephyr::xxx_session>& session_ptr)
+		 * @return   : std::shared_ptr<zephyr::xxx_session>
 		 */
 		inline std::shared_ptr<session_t> find_session_if(const std::function<bool(std::shared_ptr<session_t>&)> & fn)
 		{

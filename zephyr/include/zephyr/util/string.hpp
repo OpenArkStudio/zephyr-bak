@@ -32,7 +32,7 @@
 #pragma warning(disable:4996)
 #endif
 
-namespace asio2
+namespace zephyr
 {
 	/**
 	 * std::string format

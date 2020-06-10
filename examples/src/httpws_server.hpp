@@ -1,12 +1,12 @@
 #pragma once
 
-#include <zephyr/asio2.hpp>
+#include <zephyr/zephyr.hpp>
 
 void run_httpws_server(std::string_view host, std::string_view port)
 {
 #ifndef ASIO_STANDALONE
 
-	asio2::httpws_server server;
+	zephyr::httpws_server server;
 
 	server.bind_recv([](auto & session_ptr, http::request<http::string_body>& req, std::string_view s)
 	{
@@ -29,7 +29,7 @@ void run_httpws_server(std::string_view host, std::string_view port)
 	}).bind_disconnect([](auto & session_ptr)
 	{
 		printf("client leave : %s %u %s\n", session_ptr->remote_address().c_str(),
-			session_ptr->remote_port(), asio2::last_error_msg().c_str());
+			session_ptr->remote_port(), zephyr::last_error_msg().c_str());
 	}).bind_upgrade([](auto & session_ptr, asio::error_code ec)
 	{
 		printf("client upgrade : %s %u %d %s\n", session_ptr->remote_address().c_str(),
@@ -40,7 +40,7 @@ void run_httpws_server(std::string_view host, std::string_view port)
 			ec.value(), ec.message().c_str());
 	}).bind_stop([&server](asio::error_code ec)
 	{
-		printf("stop : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+		printf("stop : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 	});
 	server.start(host, port);
 	while (std::getchar() != '\n');
@@ -52,7 +52,7 @@ void run_httpwss_server(std::string_view host, std::string_view port)
 {
 #if !defined(ASIO_STANDALONE) && defined(ZEPHYR_USE_SSL)
 
-	asio2::httpwss_server server;
+	zephyr::httpwss_server server;
 	server.set_cert_file("test", "server.crt", "server.key", "dh512.pem");
 
 	server.bind_recv([](auto & session_ptr, http::request<http::string_body>& req, std::string_view s)
@@ -76,7 +76,7 @@ void run_httpwss_server(std::string_view host, std::string_view port)
 	}).bind_disconnect([](auto & session_ptr)
 	{
 		printf("client leave : %s %u %s\n", session_ptr->remote_address().c_str(),
-			session_ptr->remote_port(), asio2::last_error_msg().c_str());
+			session_ptr->remote_port(), zephyr::last_error_msg().c_str());
 	}).bind_upgrade([](auto & session_ptr, asio::error_code ec)
 	{
 		printf("client upgrade : %s %u %d %s\n", session_ptr->remote_address().c_str(),
@@ -87,7 +87,7 @@ void run_httpwss_server(std::string_view host, std::string_view port)
 			ec.value(), ec.message().c_str());
 	}).bind_stop([&server](asio::error_code ec)
 	{
-		printf("stop : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+		printf("stop : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 	});
 	server.start(host, port);
 	while (std::getchar() != '\n');

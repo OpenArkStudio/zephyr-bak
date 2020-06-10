@@ -21,7 +21,7 @@
 #include <zephyr/http/component/ws_stream_cp.hpp>
 #include <zephyr/http/impl/ws_send_op.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template <class>                             class session_mgr_t;
 	template <class, class>                      class tcp_server_impl_t;
@@ -388,7 +388,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	class httpws_session : public detail::httpws_session_impl_t<httpws_session,
 		asio::ip::tcp::socket, websocket::stream<asio::ip::tcp::socket&>, http::string_body, beast::flat_buffer>

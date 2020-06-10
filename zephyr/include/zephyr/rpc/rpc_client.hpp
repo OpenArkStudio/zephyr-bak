@@ -25,7 +25,7 @@
 #include <zephyr/rpc/component/rpc_call_cp.hpp>
 #include <zephyr/rpc/impl/rpc_recv_op.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class executor_t>
 	class rpc_client_impl_t
@@ -135,7 +135,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 #if 1
 	/// Using tcp dgram mode as the underlying communication support

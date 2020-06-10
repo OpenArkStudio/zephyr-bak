@@ -18,7 +18,7 @@
 
 /** @def ZEPHYR_API_VERSION
 
-    Identifies the API version of asio2.
+    Identifies the API version of zephyr.
 
     This is a simple integer that is incremented by one every
     time a set of code changes is merged to the develop branch.

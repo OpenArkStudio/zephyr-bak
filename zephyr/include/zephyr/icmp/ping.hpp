@@ -45,7 +45,7 @@
 #include <zephyr/icmp/detail/ipv4_header.hpp>
 #include <zephyr/icmp/detail/ipv6_header.hpp>
 
-namespace asio2
+namespace zephyr
 {
 	class icmp_rep : public detail::ipv4_header, /*public detail::ipv6_header,*/ public detail::icmp_header
 	{
@@ -61,7 +61,7 @@ namespace asio2
 	};
 }
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class socket_t, class buffer_t>
 	class ping_impl_t
@@ -154,9 +154,9 @@ namespace asio2::detail
 		/**
 		 * @function : bind recv listener
 		 * @param    : fun - a user defined callback function
-		 * void on_recv(asio2::icmp_rep& rep){...}
+		 * void on_recv(zephyr::icmp_rep& rep){...}
 		 * or a lumbda function like this :
-		 * [&](asio2::icmp_rep& rep){...}
+		 * [&](zephyr::icmp_rep& rep){...}
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_recv(F&& fun, C&&... obj)
@@ -183,7 +183,7 @@ namespace asio2::detail
 		 * @function : bind start listener
 		 * @param    : fun - a user defined callback function
 		 * This notification is called after the server starts up, whether successful or unsuccessful
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_start(F&& fun, C&&... obj)
@@ -196,7 +196,7 @@ namespace asio2::detail
 		 * @function : bind stop listener
 		 * @param    : fun - a user defined callback function
 		 * This notification is called before the server is ready to stop
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_stop(F&& fun, C&&... obj)
@@ -440,7 +440,7 @@ namespace asio2::detail
 		void _post_send()
 		{
 			// if ncount_ is equal to max, infinite send
-			if (this->ncount_ != std::size_t(-1))
+			if (this->ncount_ != std::size_t(0))
 			{
 				if (this->total_send_ >= this->ncount_)
 				{
@@ -646,7 +646,7 @@ namespace asio2::detail
 		asio::ip::icmp::endpoint                    destination_;
 		unsigned short                              identifier_;
 
-		std::size_t                                 ncount_{ -1 };
+		std::size_t                                 ncount_{ 0 };
 		std::size_t                                 total_send_{ 0 };
 		std::size_t                                 total_recv_{ 0 };
 		std::chrono::steady_clock::duration         total_time_{ 0 };
@@ -657,7 +657,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	/**
 	 * @constructor Parameter description

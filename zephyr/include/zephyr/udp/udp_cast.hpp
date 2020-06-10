@@ -49,7 +49,7 @@
 #include <zephyr/udp/component/udp_send_cp.hpp>
 #include <zephyr/udp/impl/udp_send_op.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class socket_t, class buffer_t>
 	class udp_cast_impl_t
@@ -201,7 +201,7 @@ namespace asio2::detail
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
 		 * This notification is called after the server starts up, whether successful or unsuccessful
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_start(F&& fun, C&&... obj)
@@ -217,7 +217,7 @@ namespace asio2::detail
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
 		 * This notification is called before the server is ready to stop
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_stop(F&& fun, C&&... obj)
@@ -498,15 +498,15 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	/*
 	 * udp unicast/multicast/broadcast
 	 */
-	class udp_cast : public detail::udp_cast_impl_t<udp_cast, asio::ip::udp::socket, asio2::linear_buffer>
+	class udp_cast : public detail::udp_cast_impl_t<udp_cast, asio::ip::udp::socket, zephyr::linear_buffer>
 	{
 	public:
-		using udp_cast_impl_t<udp_cast, asio::ip::udp::socket, asio2::linear_buffer>::udp_cast_impl_t;
+		using udp_cast_impl_t<udp_cast, asio::ip::udp::socket, zephyr::linear_buffer>::udp_cast_impl_t;
 	};
 }
 

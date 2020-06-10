@@ -52,7 +52,7 @@
 #include <zephyr/tcp/impl/tcp_send_op.hpp>
 #include <zephyr/tcp/impl/tcp_recv_op.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	/**
 	 * The serial_port class provides a wrapper over serial port functionality.
@@ -212,7 +212,7 @@ namespace asio2::detail
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
 		 * This notification is called after the server starts up, whether successful or unsuccessful
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_start(F&& fun, C&&... obj)
@@ -228,7 +228,7 @@ namespace asio2::detail
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
 		 * This notification is called before the server is ready to stop
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_stop(F&& fun, C&&... obj)
@@ -480,7 +480,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	/**
 	 * The serial_port class provides a wrapper over serial port functionality.

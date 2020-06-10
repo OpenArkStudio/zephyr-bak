@@ -20,7 +20,7 @@
 #include <functional>
 #include <type_traits>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	/*
 	 * 1. function type								==>	Ret(Args...)

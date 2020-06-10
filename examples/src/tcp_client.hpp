@@ -1,6 +1,6 @@
 #pragma once
 
-#include <zephyr/asio2.hpp>
+#include <zephyr/zephyr.hpp>
 
 void on_recv(std::string_view sv)
 {
@@ -37,7 +37,7 @@ namespace boost::asio {
 void run_tcp_client(std::string_view host, std::string_view port)
 {
 	int count = 1;
-	std::unique_ptr<asio2::tcp_client[]> clients = std::make_unique<asio2::tcp_client[]>(count);
+	std::unique_ptr<zephyr::tcp_client[]> clients = std::make_unique<zephyr::tcp_client[]>(count);
 	//while (1) // use infinite loop and sleep 2 seconds to test start and stop
 	//for (int i = 0; i < 1000; i++)
 	{
@@ -48,12 +48,12 @@ void run_tcp_client(std::string_view host, std::string_view port)
 			//// == default reconnect option is "enable" ==
 			//client.reconnect(false); // disable auto reconnect
 			//client.reconnect(true); // enable auto reconnect and use the default delay
-			client.reconnect(true, std::chrono::milliseconds(100)); // enable auto reconnect and use custom delay
+			client.auto_reconnect(true, std::chrono::milliseconds(100)); // enable auto reconnect and use custom delay
 			client.start_timer(1, std::chrono::seconds(1), []() {}); // test timer
 			client.bind_connect([&](asio::error_code ec)
 			{
-				if (asio2::get_last_error())
-					printf("connect failure : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+				if (zephyr::get_last_error())
+					printf("connect failure : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 				else
 					printf("connect success : %s %u\n", client.local_address().c_str(), client.local_port());
 
@@ -85,14 +85,14 @@ void run_tcp_client(std::string_view host, std::string_view port)
 				client.send(s.c_str(), asio::use_future);
 				int narys[2] = { 1,2 };
 				client.send(narys);
-				client.send(narys, []() {std::cout << asio2::last_error_msg() << std::endl; }); // callback with no params
+				client.send(narys, []() {std::cout << zephyr::last_error_msg() << std::endl; }); // callback with no params
 				client.send(narys, [](std::size_t bytes) {}); // callback with param
 				client.send(narys, asio::use_future);
 
 				//asio::write(client.socket(), asio::buffer(s));
 			}).bind_disconnect([&](asio::error_code ec)
 			{
-				printf("disconnect : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+				printf("disconnect : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 			}).bind_recv([&](std::string_view sv)
 			{
 				printf("recv : %u %.*s\n", (unsigned)sv.size(), (int)sv.size(), sv.data());
@@ -196,7 +196,7 @@ void run_tcps_client(std::string_view host, std::string_view port)
 	for (int i = 0; i < 1000; i++)
 	{
 		size_t count = 1;
-		std::unique_ptr<asio2::tcps_client[]> clients = std::make_unique<asio2::tcps_client[]>(count);
+		std::unique_ptr<zephyr::tcps_client[]> clients = std::make_unique<zephyr::tcps_client[]>(count);
 		for (size_t i = 0; i < count; i++)
 		{
 			auto & client = clients[i];
@@ -240,7 +240,7 @@ void run_tcps_client(std::string_view host, std::string_view port)
 			//client.async_start(host, port, "\r\n");
 			//client.async_start(host, port, asio::transfer_at_least(1));
 			//client.async_start(host, port, asio::transfer_exactly(100));
-			//client.async_start(host, port, asio2::use_dgram);
+			//client.async_start(host, port, zephyr::use_dgram);
 		}
 		//while (std::getchar() != '\n');
 		std::this_thread::sleep_for(std::chrono::milliseconds(200));

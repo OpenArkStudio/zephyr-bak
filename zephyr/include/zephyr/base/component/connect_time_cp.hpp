@@ -17,7 +17,7 @@
 
 #include <chrono>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t>
 	class connect_time_cp

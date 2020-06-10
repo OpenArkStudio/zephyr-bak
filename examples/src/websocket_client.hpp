@@ -1,18 +1,18 @@
 #pragma once
 
-#include <zephyr/asio2.hpp>
+#include <zephyr/zephyr.hpp>
 
 void run_ws_client(std::string_view host, std::string_view port)
 {
 #ifndef ASIO_STANDALONE
 
-	asio2::ws_client client;
+	zephyr::ws_client client;
 	
 	client.connect_timeout(std::chrono::seconds(10));
 	client.bind_connect([&](asio::error_code ec)
 	{
-		if (asio2::get_last_error())
-			printf("connect failure : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+		if (zephyr::get_last_error())
+			printf("connect failure : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 		else
 			printf("connect success : %s %u\n", client.local_address().c_str(), client.local_port());
 		std::string s;
@@ -31,7 +31,7 @@ void run_ws_client(std::string_view host, std::string_view port)
 		client.send("abc"); // this send will failed, because connection is not fully completed
 	}).bind_disconnect([](asio::error_code ec)
 	{
-		printf("disconnect : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+		printf("disconnect : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 	}).bind_recv([&](std::string_view sv)
 	{
 		printf("recv : %u %.*s\n", (unsigned)sv.size(), (int)sv.size(), sv.data());
@@ -43,7 +43,7 @@ void run_ws_client(std::string_view host, std::string_view port)
 
 	if (!client.start(host, port))
 	{
-		printf("start failure : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+		printf("start failure : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 	}
 	//client.async_start(host, port);
 
@@ -60,7 +60,7 @@ void run_wss_client(std::string_view host, std::string_view port)
 #if !defined(ASIO_STANDALONE) && defined(ZEPHYR_USE_SSL)
 	//while (1)
 	{
-		asio2::wss_client client;
+		zephyr::wss_client client;
 		client.connect_timeout(std::chrono::seconds(300));
 		client.set_cert_file("server.crt");
 		client.bind_recv([&](std::string_view s)
@@ -69,8 +69,8 @@ void run_wss_client(std::string_view host, std::string_view port)
 			client.send(s);
 		}).bind_connect([&](asio::error_code ec)
 		{
-			if (asio2::get_last_error())
-				printf("connect failure : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			if (zephyr::get_last_error())
+				printf("connect failure : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 			else
 				printf("connect success : %s %u\n", client.local_address().c_str(), client.local_port());
 
@@ -86,10 +86,10 @@ void run_wss_client(std::string_view host, std::string_view port)
 			client.send(std::move(s), [](std::size_t bytes_sent) {});
 		}).bind_disconnect([](asio::error_code ec)
 		{
-			printf("disconnect : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			printf("disconnect : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 		}).bind_handshake([&](asio::error_code ec)
 		{
-			printf("handshake : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			printf("handshake : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 		}).bind_upgrade([&](asio::error_code ec)
 		{
 			std::cout << "upgrade " << (ec ? "failure : " : "success : ") << ec.value() << " "

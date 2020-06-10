@@ -48,7 +48,7 @@
 #include <functional>
 #include <stdexcept>
 
-namespace asio2
+namespace zephyr
 {
 	/**
 	 * thread pool interface, this pool is multi thread safed.

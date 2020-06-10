@@ -1,12 +1,12 @@
 #pragma once
 
-#include <zephyr/asio2.hpp>
+#include <zephyr/zephyr.hpp>
 
 void run_serial_port(const std::string& device, unsigned int baud_rate)
 {
 	//while (1) // use infinite loop and sleep 2 seconds to test start and stop
 	{
-		asio2::scp sp;
+		zephyr::scp sp;
 		sp.start_timer(1, std::chrono::seconds(1), []() {});
 		sp.bind_init([&]()
 		{
@@ -32,10 +32,10 @@ void run_serial_port(const std::string& device, unsigned int baud_rate)
 
 		}).bind_start([&](asio::error_code ec)
 		{
-			printf("start : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			printf("start : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 		}).bind_stop([&](asio::error_code ec)
 		{
-			printf("stop : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			printf("stop : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 		});
 		//sp.start(device, baud_rate);
 		sp.start(device, baud_rate, '>');
@@ -44,7 +44,7 @@ void run_serial_port(const std::string& device, unsigned int baud_rate)
 		//sp.start(device, baud_rate, asio::transfer_at_least(1));
 		//sp.start(device, baud_rate, asio::transfer_exactly(10));
 		sp.send("abc", [](std::size_t bytes_sent) {
-			printf("send : %u %d %s\n", (unsigned)bytes_sent, asio2::last_error_val(), asio2::last_error_msg().c_str()); });
+			printf("send : %u %d %s\n", (unsigned)bytes_sent, zephyr::last_error_val(), zephyr::last_error_msg().c_str()); });
 
 		while (std::getchar() != '\n');
 		//std::this_thread::sleep_for(std::chrono::seconds(2));

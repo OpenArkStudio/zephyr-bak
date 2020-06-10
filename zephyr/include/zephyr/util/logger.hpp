@@ -58,7 +58,7 @@
    compilered by shared link(a dll),and when the exe is compilered with MT/MTd,there will be a lot of compilation problems.
 */
 
-namespace asio2
+namespace zephyr
 {
 
 #if defined(_MSC_VER)

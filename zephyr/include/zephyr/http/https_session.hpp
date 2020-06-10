@@ -20,7 +20,7 @@
 #include <zephyr/http/http_session.hpp>
 #include <zephyr/tcp/component/ssl_stream_cp.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template <class>                             class session_mgr_t;
 	template <class, class>                      class tcp_server_impl_t;
@@ -133,7 +133,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	class https_session : public detail::https_session_impl_t<https_session, asio::ip::tcp::socket, http::string_body, beast::flat_buffer>
 	{

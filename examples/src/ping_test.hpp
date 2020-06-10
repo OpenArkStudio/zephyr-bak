@@ -1,10 +1,10 @@
 #pragma once
 
-#include <zephyr/asio2.hpp>
+#include <zephyr/zephyr.hpp>
 
 class ping_test
 {
-	asio2::ping ping;
+	zephyr::ping ping;
 public:
 	ping_test() : ping(1000)
 	{
@@ -15,7 +15,7 @@ public:
 			.bind_start(std::bind(&ping_test::on_start, this, std::placeholders::_1))
 			.bind_stop([this](asio::error_code ec) { this->on_stop(ec); });
 	}
-	void on_recv(asio2::icmp_rep& rep)
+	void on_recv(zephyr::icmp_rep& rep)
 	{
 		if (rep.lag.count() == -1)
 			std::cout << "request timed out" << std::endl;
@@ -29,18 +29,18 @@ public:
 	}
 	void on_start(asio::error_code ec)
 	{
-		printf("start : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+		printf("start : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 	}
 	void on_stop(asio::error_code ec)
 	{
-		printf("stop : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+		printf("stop : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 	}
 	void run()
 	{
 		//if (!ping.start("123.45.67.89"))
 			//if (!ping.start("fe80::59f9:25af:4427:fab7"))
 			if (!ping.start("stackoverflow.com"))
-			printf("start failure : %s\n", asio2::last_error_msg().c_str());
+			printf("start failure : %s\n", zephyr::last_error_msg().c_str());
 
 		while (std::getchar() != '\n');
 

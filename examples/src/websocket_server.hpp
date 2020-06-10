@@ -1,12 +1,12 @@
 #pragma once
 
-#include <zephyr/asio2.hpp>
+#include <zephyr/zephyr.hpp>
 
 void run_ws_server(std::string_view host, std::string_view port)
 {
 #ifndef ASIO_STANDALONE
 
-	asio2::ws_server server;
+	zephyr::ws_server server;
 
 	server.bind_recv([](auto & session_ptr, std::string_view s)
 	{
@@ -19,7 +19,7 @@ void run_ws_server(std::string_view host, std::string_view port)
 	}).bind_disconnect([](auto & session_ptr)
 	{
 		printf("client leave : %s %u %s\n", session_ptr->remote_address().c_str(),
-			session_ptr->remote_port(), asio2::last_error_msg().c_str());
+			session_ptr->remote_port(), zephyr::last_error_msg().c_str());
 	}).bind_upgrade([](auto & session_ptr, asio::error_code ec)
 	{
 		printf(">> upgrade %d %s\n", ec.value(), ec.message().c_str());
@@ -43,9 +43,9 @@ void run_wss_server(std::string_view host, std::string_view port)
 #if !defined(ASIO_STANDALONE) && defined(ZEPHYR_USE_SSL)
 	while (1)
 	{
-		asio2::wss_server server;
+		zephyr::wss_server server;
 		server.set_cert_file("test", "server.crt", "server.key", "dh512.pem");
-		server.bind_recv([](std::shared_ptr<asio2::wss_session> & session_ptr, std::string_view s)
+		server.bind_recv([](std::shared_ptr<zephyr::wss_session> & session_ptr, std::string_view s)
 		{
 			printf("recv : %u %.*s\n", (unsigned)s.size(), (int)s.size(), s.data());
 			session_ptr->send(s, []() {});
@@ -56,22 +56,22 @@ void run_wss_server(std::string_view host, std::string_view port)
 		}).bind_disconnect([](auto & session_ptr)
 		{
 			printf("client leave : %s %u %s\n", session_ptr->remote_address().c_str(),
-				session_ptr->remote_port(), asio2::last_error_msg().c_str());
+				session_ptr->remote_port(), zephyr::last_error_msg().c_str());
 		}).bind_handshake([](auto & session_ptr, asio::error_code ec)
 		{
-			printf("client handshake : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			printf("client handshake : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 		}).bind_upgrade([](auto & session_ptr, asio::error_code ec)
 		{
-			printf("client upgrade : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			printf("client upgrade : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 		}).bind_start([&server](asio::error_code ec)
 		{
-			if (asio2::get_last_error())
-				printf("start websocket ssl server failure : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			if (zephyr::get_last_error())
+				printf("start websocket ssl server failure : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 			else
 				printf("start websocket ssl server success : %s %u\n", server.listen_address().c_str(), server.listen_port());
 		}).bind_stop([&server](asio::error_code ec)
 		{
-			printf("stop : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			printf("stop : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 		});
 		server.start(host, port);
 		//while (std::getchar() != '\n');

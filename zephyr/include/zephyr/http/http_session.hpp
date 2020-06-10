@@ -23,7 +23,7 @@
 #include <zephyr/http/impl/http_send_op.hpp>
 #include <zephyr/http/impl/http_recv_op.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template <class>                      class session_mgr_t;
 	template <class, class>               class tcp_server_impl_t;
@@ -166,7 +166,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	class http_session : public detail::http_session_impl_t<http_session, asio::ip::tcp::socket, http::string_body, beast::flat_buffer>
 	{

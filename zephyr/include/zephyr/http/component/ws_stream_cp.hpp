@@ -25,7 +25,7 @@
 #include <zephyr/base/selector.hpp>
 #include <zephyr/base/error.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class stream_t, bool isSession>
 	class ws_stream_cp

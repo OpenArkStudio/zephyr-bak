@@ -23,7 +23,7 @@
 
 #include <string>
 
-namespace asio2
+namespace zephyr
 {
 	class md5
 	{

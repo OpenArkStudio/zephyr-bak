@@ -21,7 +21,7 @@
 #include <atomic>
 #include <thread>
 
-namespace asio2
+namespace zephyr
 {
 
 	class spin_lock

@@ -25,7 +25,7 @@
 #include <random>
 #include <limits>
 
-namespace asio2
+namespace zephyr
 {
 	/**
 	 * UUID Generation in C++11

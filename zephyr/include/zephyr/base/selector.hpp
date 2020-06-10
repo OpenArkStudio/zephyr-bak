@@ -18,7 +18,7 @@
 #include <zephyr/config.hpp>
 
 #ifdef ASIO_STANDALONE
-	#include <asio/asio.hpp>
+	#include <asio.hpp>
 	#if defined(ZEPHYR_USE_SSL)
 		#include <asio/ssl.hpp>
 	#endif
@@ -48,7 +48,7 @@
 	namespace websocket = ::boost::beast::websocket;
 #endif // ASIO_STANDALONE
 
-namespace asio2
+namespace zephyr
 {
 #ifdef ASIO_STANDALONE
 	using error_code = ::asio::error_code;

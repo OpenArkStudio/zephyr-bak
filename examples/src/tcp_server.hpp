@@ -1,16 +1,16 @@
 #pragma once
 
-#include <zephyr/asio2.hpp>
+#include <zephyr/zephyr.hpp>
 
 void run_tcp_server(std::string_view host, std::string_view port)
 {
 	//while (1) // use infinite loop and sleep 1 seconds to test start and stop
 	//for (int i = 0; i < 1000; i++)
 	{
-		asio2::tcp_server server;
+		zephyr::tcp_server server;
 		printf("\n");
 		server.start_timer(1, std::chrono::seconds(1), []() {}); // test timer
-		server.bind_recv([&server](std::shared_ptr<asio2::tcp_session> & session_ptr, std::string_view s)
+		server.bind_recv([](std::shared_ptr<zephyr::tcp_session> & session_ptr, std::string_view s)
 		{
 			printf("recv : %u %.*s\n", (unsigned)s.size(), (int)s.size(), s.data());
 
@@ -27,7 +27,7 @@ void run_tcp_server(std::string_view host, std::string_view port)
 			//{
 			//}
 
-		}).bind_connect([&server](auto & session_ptr)
+		}).bind_connect([](auto & session_ptr)
 		{
 			session_ptr->no_delay(true);
 			session_ptr->start_timer(2, std::chrono::seconds(1), []() {}); // test timer
@@ -35,16 +35,16 @@ void run_tcp_server(std::string_view host, std::string_view port)
 			printf("client enter : %s %u %s %u\n",
 				session_ptr->remote_address().c_str(), session_ptr->remote_port(),
 				session_ptr->local_address().c_str(), session_ptr->local_port());
-		}).bind_disconnect([&server](auto & session_ptr)
+		}).bind_disconnect([](auto & session_ptr)
 		{
 			printf("client leave : %s %u %s\n",
 				session_ptr->remote_address().c_str(),
-				session_ptr->remote_port(), asio2::last_error_msg().c_str());
+				session_ptr->remote_port(), zephyr::last_error_msg().c_str());
 		}).bind_start([&server](asio::error_code ec)
 		{
 			printf("start tcp server : %s %u %d %s\n", server.listen_address().c_str(), server.listen_port(),
 				ec.value(), ec.message().c_str());
-		}).bind_stop([&server](asio::error_code ec)
+		}).bind_stop([](asio::error_code ec)
 		{
 			printf("stop : %d %s\n", ec.value(), ec.message().c_str());
 		});
@@ -112,7 +112,7 @@ void run_tcps_server(std::string_view host, std::string_view port)
 	{
 		printf("\n");
 		bool stopped = false;
-		asio2::tcps_server server;
+		zephyr::tcps_server server;
 		server.set_cert("test", cer, key, dh); // use memory string for cert
 		//server.set_cert_file("test", "server.crt", "server.key", "dh512.pem"); // use file for cert
 		server.start_timer(1, std::chrono::seconds(1), []() {});
@@ -133,16 +133,16 @@ void run_tcps_server(std::string_view host, std::string_view port)
 				ZEPHYR_ASSERT(false);
 			}
 			printf("client leave : %s %u %s\n", session_ptr->remote_address().c_str(),
-				session_ptr->remote_port(), asio2::last_error_msg().c_str());
+				session_ptr->remote_port(), zephyr::last_error_msg().c_str());
 		}).bind_handshake([&](auto & session_ptr, asio::error_code ec)
 		{
-			if (asio2::get_last_error())
+			if (zephyr::get_last_error())
 				printf("handshake failure : %d %s\n", ec.value(), ec.message().c_str());
 			else
 				printf("handshake success : %s %u\n", session_ptr->remote_address().c_str(), session_ptr->remote_port());
 		}).bind_start([&](asio::error_code ec)
 		{
-			if (asio2::get_last_error())
+			if (zephyr::get_last_error())
 				printf("start tcps server failure : %d %s\n", ec.value(), ec.message().c_str());
 			else
 				printf("start tcps server success : %s %u\n", server.listen_address().c_str(), server.listen_port());

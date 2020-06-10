@@ -33,7 +33,7 @@
 #include <zephyr/base/detail/function_traits.hpp>
 #include <zephyr/base/detail/buffer_wrap.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t>
 	class event_queue_cp

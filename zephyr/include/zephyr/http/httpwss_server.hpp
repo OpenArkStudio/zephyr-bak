@@ -20,7 +20,7 @@
 #include <zephyr/http/https_server.hpp>
 #include <zephyr/http/httpwss_session.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class session_t>
 	class httpwss_server_impl_t : public https_server_impl_t<derived_t, session_t>
@@ -62,7 +62,7 @@ namespace asio2::detail
 		/**
 		 * @function : bind recv listener
 		 * @param    : listener - a user defined callback function
-		 * Function signature : void(std::shared_ptr<asio2::httpwss_session>& session_ptr,
+		 * Function signature : void(std::shared_ptr<zephyr::httpwss_session>& session_ptr,
 		 * http::request<http::string_body>& req, std::string_view s)
 		 */
 		template<class T>
@@ -76,7 +76,7 @@ namespace asio2::detail
 		/**
 		 * @function : bind websocket upgrade listener
 		 * @param    : listener - a user defined callback function
-		 * Function signature : void(std::shared_ptr<asio2::httpwss_session>& session_ptr, asio::error_code ec)
+		 * Function signature : void(std::shared_ptr<zephyr::httpwss_session>& session_ptr, asio::error_code ec)
 		 */
 		template<class T>
 		inline derived_t & bind_upgrade(T && listener)
@@ -89,7 +89,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	template<class session_t>
 	class httpwss_server_t : public detail::httpwss_server_impl_t<httpwss_server_t<session_t>, session_t>

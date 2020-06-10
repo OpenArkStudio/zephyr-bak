@@ -35,9 +35,12 @@
 #include <zephyr/udp/udp_client.hpp>
 #include <zephyr/udp/udp_server.hpp>
 #include <zephyr/udp/udp_cast.hpp>
-// TODO: will use protobuf as serialization library, not cereal. Comment rpc first.
-//#include <zephyr/rpc/rpc_client.hpp>
-//#include <zephyr/rpc/rpc_server.hpp>
+
+#ifdef ZEPHYR_ENABLE_RPC
+    #include <zephyr/rpc/rpc_client.hpp>
+    #include <zephyr/rpc/rpc_server.hpp>
+#endif
+
 #include <zephyr/icmp/ping.hpp>
 #include <zephyr/scp/scp.hpp>
 
