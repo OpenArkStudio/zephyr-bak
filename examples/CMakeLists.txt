@@ -2,7 +2,7 @@
 set(client_project "client")
 file(GLOB CLIENT_SRC src/client.cpp ${ROOT_DIR}/zephyr/*.hpp)
 list(FILTER ${CLIENT_SRC} EXCLUDE REGEX "*rpc*")
-add_executable(${client_project} ${CLIENT_SRC})
+add_executable(${client_project} ${CLIENT_SRC} ../zephyr/include/zephyr/util/packet.hpp ../zephyr/include/zephyr/util/endian.hpp)
 target_link_libraries(${client_project} ${PROTOBUF_LIBRARIES})
 set_target_properties(${client_project} PROPERTIES
         FOLDER "examples"

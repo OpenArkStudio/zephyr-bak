@@ -58,8 +58,15 @@ int main(int argc, char* argv[])
             //    zephyr::last_error_msg().c_str());
         })
         .bind_start([&server](asio::error_code ec) {
-            printf("start tcp server : %s %u %d %s\n", server.listen_address().c_str(), server.listen_port(),
-                ec.value(), ec.message().c_str());
+            if (!ec)
+            {
+                printf("start tcp server : %s %u\n", server.listen_address().c_str(), server.listen_port());
+            }
+            else
+            {
+                printf("start tcp server : %s %u %d %s\n", server.listen_address().c_str(), server.listen_port(),
+                    ec.value(), ec.message().c_str());
+            }
         })
         .bind_stop([](asio::error_code ec) { printf("stop : %d %s\n", ec.value(), ec.message().c_str()); })
         .bind_recv([](std::shared_ptr<zephyr::tcp_session>& session_ptr, std::string_view s) {
