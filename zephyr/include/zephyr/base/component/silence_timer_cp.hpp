@@ -21,7 +21,7 @@
 #include <zephyr/base/iopool.hpp>
 #include <zephyr/base/error.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, bool isSession>
 	class silence_timer_cp

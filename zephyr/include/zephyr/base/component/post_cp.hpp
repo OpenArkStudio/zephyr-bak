@@ -22,7 +22,7 @@
 #include <zephyr/base/iopool.hpp>
 #include <zephyr/base/detail/allocator.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t>
 	class post_cp

@@ -18,7 +18,7 @@
 #include <zephyr/base/server.hpp>
 #include <zephyr/tcp/tcp_session.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class session_t>
 	class tcp_server_impl_t : public server_impl_t<derived_t, session_t>
@@ -137,7 +137,7 @@ namespace asio2::detail
 		 * @param    : obj - a pointer or reference to a class object, this parameter can be none
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
-		 * Function signature : void(std::shared_ptr<asio2::tcp_session>& session_ptr, std::string_view s)
+		 * Function signature : void(std::shared_ptr<zephyr::tcp_session>& session_ptr, std::string_view s)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_recv(F&& fun, C&&... obj)
@@ -154,7 +154,7 @@ namespace asio2::detail
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
 		 * This notification is invoked immediately when the server accept a new connection
-		 * Function signature : void(std::shared_ptr<asio2::tcp_session>& session_ptr)
+		 * Function signature : void(std::shared_ptr<zephyr::tcp_session>& session_ptr)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_accept(F&& fun, C&&... obj)
@@ -172,7 +172,7 @@ namespace asio2::detail
 		 * the class object's pointer or refrence.
 		 * This notification is invoked after the connection is fully established,
 		 * and only after the connect/handshake/upgrade are completed.
-		 * Function signature : void(std::shared_ptr<asio2::tcp_session>& session_ptr)
+		 * Function signature : void(std::shared_ptr<zephyr::tcp_session>& session_ptr)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_connect(F&& fun, C&&... obj)
@@ -190,7 +190,7 @@ namespace asio2::detail
 		 * the class object's pointer or refrence.
 		 * This notification is invoked before the connection is disconnected, you can call
 		 * get_last_error/last_error_msg, etc, to get the disconnected error information
-		 * Function signature : void(std::shared_ptr<asio2::tcp_session>& session_ptr)
+		 * Function signature : void(std::shared_ptr<zephyr::tcp_session>& session_ptr)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_disconnect(F&& fun, C&&... obj)
@@ -224,7 +224,7 @@ namespace asio2::detail
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
 		 * This notification is called after the server starts up, whether successful or unsuccessful
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_start(F&& fun, C&&... obj)
@@ -238,9 +238,9 @@ namespace asio2::detail
 		 * @param    : fun - a user defined callback function
 		 * @param    : obj - a pointer or reference to a class object, this parameter can be none
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
-		 * the class object's pointer or refrence.
+		 * the class object's pointer or reference.
 		 * This notification is called before the server is ready to stop
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_stop(F&& fun, C&&... obj)
@@ -251,7 +251,7 @@ namespace asio2::detail
 
 	public:
 		/**
-		 * @function : get the acceptor refrence
+		 * @function : get the acceptor reference
 		 */
 		inline asio::ip::tcp::acceptor & acceptor() { return this->acceptor_; }
 
@@ -374,7 +374,7 @@ namespace asio2::detail
 			// asio don't allow operate the same socket in multi thread,if you close socket in one thread and another thread is 
 			// calling socket's async_... function,it will crash.so we must care for operate the socket.when need close the
 			// socket ,we use the strand to post a event,make sure the socket's close operation is in the same thread.
-			asio::post(this->io_.strand(), [this, ec, this_ptr = std::move(self_ptr), old_state]()
+			asio::post(this->io_.strand(), [this, ec, this_ptr = std::move(self_ptr)]()
 			{
 				set_last_error(ec);
 
@@ -383,7 +383,7 @@ namespace asio2::detail
 				this->counter_timer_.async_wait(asio::bind_executor(this->io_.strand(), [](const error_code&) {}));
 
 				// stop all the sessions, the session::stop must be no blocking,otherwise it may be cause loop lock.
-				this->sessions_.foreach([this](std::shared_ptr<session_t> & session_ptr)
+				this->sessions_.foreach([](std::shared_ptr<session_t> & session_ptr)
 				{
 					session_ptr->stop();
 				});
@@ -515,7 +515,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	template<class session_t>
 	class tcp_server_t : public detail::tcp_server_impl_t<tcp_server_t<session_t>, session_t>

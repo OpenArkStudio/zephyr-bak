@@ -23,7 +23,7 @@
 #include <zephyr/http/impl/http_send_op.hpp>
 #include <zephyr/http/impl/http_recv_op.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class socket_t, class body_t, class buffer_t>
 	class http_client_impl_t
@@ -457,7 +457,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	class http_client : public detail::http_client_impl_t<http_client, asio::ip::tcp::socket, http::string_body, beast::flat_buffer>
 	{

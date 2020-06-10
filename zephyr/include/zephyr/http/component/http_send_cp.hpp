@@ -36,7 +36,7 @@
 
 #include <zephyr/http/detail/http_util.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class body_t, class buffer_t, bool isSession>
 	class http_send_cp

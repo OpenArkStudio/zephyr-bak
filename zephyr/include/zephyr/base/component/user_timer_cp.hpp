@@ -26,7 +26,7 @@
 
 #include <zephyr/base/detail/allocator.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 #ifndef ZEPHYR_USER_TIMER_ID_TYPE
 #define ZEPHYR_USER_TIMER_ID_TYPE std::size_t

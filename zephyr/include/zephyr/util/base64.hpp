@@ -38,7 +38,7 @@
 
 #include <string>
 
-namespace asio2 {
+namespace zephyr {
 namespace detail
 {
 	static std::string const base64_chars =
@@ -178,6 +178,6 @@ inline std::string decode(std::string const & input) {
     return ret;
 }
 };
-} // namespace asio2
+} // namespace zephyr
 
 #endif // __ZEPHYR_BASE64_IMPL_HPP__

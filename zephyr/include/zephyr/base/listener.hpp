@@ -26,7 +26,7 @@
 
 #include <zephyr/base/error.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template <typename Enumeration>
 	inline constexpr auto to_int(Enumeration const value) -> typename std::underlying_type<Enumeration>::type

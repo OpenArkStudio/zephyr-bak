@@ -21,7 +21,7 @@
 
 #include <zephyr/base/selector.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	struct use_sync_t {};
 	struct use_kcp_t {};
@@ -103,7 +103,7 @@ namespace asio2::detail
 	}
 }
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class T>
 	class condition_wrap
@@ -188,7 +188,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	constexpr static detail::use_dgram_t use_dgram;
 

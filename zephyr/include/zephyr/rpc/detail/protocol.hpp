@@ -20,7 +20,7 @@
 
 #include <zephyr/rpc/detail/serialization.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	/*
 	 * request  : message type + request id + function name + parameters value...

@@ -22,7 +22,7 @@
 #include <zephyr/http/component/ws_stream_cp.hpp>
 #include <zephyr/http/impl/ws_send_op.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class socket_t, class stream_t, class body_t, class buffer_t>
 	class ws_client_impl_t
@@ -174,7 +174,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	class ws_client : public detail::ws_client_impl_t<ws_client, asio::ip::tcp::socket,
 		websocket::stream<asio::ip::tcp::socket&>, http::string_body, beast::flat_buffer>

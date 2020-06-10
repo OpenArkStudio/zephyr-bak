@@ -20,7 +20,7 @@
 #include <zephyr/http/http_client.hpp>
 #include <zephyr/tcp/component/ssl_stream_cp.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class socket_t, class body_t, class buffer_t>
 	class https_client_impl_t
@@ -102,7 +102,7 @@ namespace asio2::detail
 		/**
 		 * @function : bind ssl handshake listener
 		 * @param    : fun - a user defined callback function
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_handshake(F&& fun, C&&... obj)
@@ -142,7 +142,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	class https_client : public detail::https_client_impl_t<https_client, asio::ip::tcp::socket, http::string_body, beast::flat_buffer>
 	{

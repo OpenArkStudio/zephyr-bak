@@ -21,7 +21,7 @@
 
 #include <zephyr/base/selector.hpp>
 
-namespace asio2
+namespace zephyr
 {
 	template<class Container>
 	class basic_linear_buffer : protected Container

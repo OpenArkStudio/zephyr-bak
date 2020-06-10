@@ -1,6 +1,6 @@
 #pragma once
 
-#include <zephyr/asio2.hpp>
+#include <zephyr/zephyr.hpp>
 
 class user
 {
@@ -23,7 +23,7 @@ void run_rpc_client(std::string_view host, std::string_view port)
 	//while (1) // use infinite loop and sleep 2 seconds to test start and stop
 	{
 		int count = 1;
-		std::unique_ptr<asio2::rpc_client[]> clients = std::make_unique<asio2::rpc_client[]>(count);
+		std::unique_ptr<zephyr::rpc_client[]> clients = std::make_unique<zephyr::rpc_client[]>(count);
 		for (int i = 0; i < count; ++i)
 		{
 			auto & client = clients[i];
@@ -31,7 +31,7 @@ void run_rpc_client(std::string_view host, std::string_view port)
 			client.timeout(std::chrono::seconds(3));
 			client.bind_connect([&](asio::error_code ec)
 			{
-				printf("connect : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+				printf("connect : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 				// the type of the callback's second parameter is auto, so you have to specify 
 				// the return type in the template function like 'async_call<int>'
 				client.async_call<int>([](asio::error_code ec, auto v)
@@ -40,7 +40,7 @@ void run_rpc_client(std::string_view host, std::string_view port)
 				}, "add", 120, 11);
 			}).bind_disconnect([](asio::error_code ec)
 			{
-				printf("disconnect : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+				printf("disconnect : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 			}).bind_recv([&](std::string_view sv)
 			{
 			});
@@ -49,7 +49,7 @@ void run_rpc_client(std::string_view host, std::string_view port)
 
 			// Using tcp dgram mode as the underlying communication support(This is the default setting)
 			// Then must use "use_dgram" parameter.
-			client.start(host, port, asio2::use_dgram);
+			client.start(host, port, zephyr::use_dgram);
 
 			// Using websocket as the underlying communication support.
 			// Need to goto the tail of the (rpc_client.hpp rpc_server.hpp rpc_session.hpp) files,
@@ -87,7 +87,7 @@ void run_rpc_client(std::string_view host, std::string_view port)
 					double mul = client.call<double>("mul", 2.5, 2.5);
 					printf("mul : %lf err : %d %s\n", mul, ec.value(), ec.message().c_str());
 				}
-				catch (asio2::system_error& e) { printf("mul : %d %s\n", e.code().value(), e.code().message().c_str()); }
+				catch (zephyr::system_error& e) { printf("mul : %d %s\n", e.code().value(), e.code().message().c_str()); }
 
 				client.async_call([](asio::error_code ec, std::string v)
 				{

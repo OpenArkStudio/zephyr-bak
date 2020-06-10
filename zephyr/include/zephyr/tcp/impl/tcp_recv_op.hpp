@@ -24,7 +24,7 @@
 #include <zephyr/base/error.hpp>
 #include <zephyr/base/detail/condition_wrap.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, bool isSession>
 	class tcp_recv_op

@@ -20,7 +20,7 @@
 #include <zephyr/tcp/tcps_server.hpp>
 #include <zephyr/http/wss_session.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class session_t>
 	class wss_server_impl_t : public tcps_server_impl_t<derived_t, session_t>
@@ -87,7 +87,7 @@ namespace asio2::detail
 		/**
 		 * @function : bind websocket upgrade listener
 		 * @param    : fun - a user defined callback function
-		 * Function signature : void(std::shared_ptr<asio2::wss_session>& session_ptr, asio::error_code ec)
+		 * Function signature : void(std::shared_ptr<zephyr::wss_session>& session_ptr, asio::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_upgrade(F&& fun, C&&... obj)
@@ -102,7 +102,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	template<class session_t>
 	class wss_server_t : public detail::wss_server_impl_t<wss_server_t<session_t>, session_t>

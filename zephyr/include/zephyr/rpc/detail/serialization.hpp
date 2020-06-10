@@ -28,7 +28,7 @@
 
 #include <zephyr/rpc/detail/rpc_portable_binary.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	class ostrbuf : public std::streambuf
 	{

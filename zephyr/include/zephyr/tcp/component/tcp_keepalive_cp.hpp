@@ -24,7 +24,7 @@
 #include <Mstcpip.h> // tcp_keepalive struct
 #endif
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class socket_t>
 	class tcp_keepalive_cp

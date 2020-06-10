@@ -23,7 +23,7 @@
 
 #include <zephyr/base/selector.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	class io_t
 	{

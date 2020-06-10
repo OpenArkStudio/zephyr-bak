@@ -20,7 +20,7 @@
 #include <zephyr/tcp/tcp_server.hpp>
 #include <zephyr/tcp/tcps_session.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class session_t>
 	class tcps_server_impl_t
@@ -117,7 +117,7 @@ namespace asio2::detail
 		 * @param    : obj - a pointer or reference to a class object, this parameter can be none
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
-		 * Function signature : void(std::shared_ptr<asio2::tcps_session>& session_ptr, asio2::error_code ec)
+		 * Function signature : void(std::shared_ptr<zephyr::tcps_session>& session_ptr, zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_handshake(F&& fun, C&&... obj)
@@ -137,7 +137,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	template<class session_t>
 	class tcps_server_t : public detail::tcps_server_impl_t<tcps_server_t<session_t>, session_t>

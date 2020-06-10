@@ -22,7 +22,7 @@
 #include <zephyr/tcp/impl/tcp_send_op.hpp>
 #include <zephyr/tcp/impl/tcp_recv_op.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template <class>                      class session_mgr_t;
 	template <class, class>               class tcp_server_impl_t;
@@ -119,7 +119,7 @@ namespace asio2::detail
 	public:
 		/**
 		 * @function : stop session
-		 * note : this function must be noblocking,if it's blocking,maybe cause circle lock.
+		 * note : this function must be non-blocking,if it's blocking,maybe cause circle lock.
 		 * You can call this function on the communication thread and anywhere to stop the session.
 		 */
 		inline void stop()
@@ -130,7 +130,7 @@ namespace asio2::detail
 		/**
 		 * @function : get this object hash key,used for session map
 		 */
-		inline const key_type hash_key() const
+		inline key_type hash_key() const
 		{
 			return reinterpret_cast<key_type>(this);
 		}
@@ -145,12 +145,9 @@ namespace asio2::detail
 			this->reset_connect_time();
 			this->reset_active_time();
 
-			if constexpr (std::is_same_v<MatchCondition, use_dgram_t>)
-				this->dgram_ = true;
-			else
-				this->dgram_ = false;
+            this->dgram_ = (std::is_same_v<MatchCondition, use_dgram_t> != 0);
 
-			// set keeplive options
+			// set keepalive options
 			this->keep_alive_options();
 		}
 
@@ -299,7 +296,7 @@ namespace asio2::detail
 		template<typename MatchCondition>
 		inline void _start_recv(std::shared_ptr<derived_t> this_ptr, condition_wrap<MatchCondition> condition)
 		{
-			// to avlid the user call stop in another thread,then it may be socket_.async_read_some
+			// to avoid the user call stop in another thread,then it may be socket_.async_read_some
 			// and socket_.close be called at the same time
 			asio::post(this->io_.strand(), make_allocator(this->rallocator_,
 				[this, self_ptr = std::move(this_ptr), condition]()
@@ -355,11 +352,11 @@ namespace asio2::detail
 
 	protected:
 		/**
-		 * @function : get the recv/read allocator object refrence
+		 * @function : get the recv/read allocator object reference
 		 */
 		inline auto & rallocator() { return this->rallocator_; }
 		/**
-		 * @function : get the send/write allocator object refrence
+		 * @function : get the send/write allocator object reference
 		 */
 		inline auto & wallocator() { return this->wallocator_; }
 
@@ -375,7 +372,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	class tcp_session : public detail::tcp_session_impl_t<tcp_session, asio::ip::tcp::socket, asio::streambuf>
 	{

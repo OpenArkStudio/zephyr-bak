@@ -20,7 +20,7 @@
 #include <zephyr/tcp/tcps_server.hpp>
 #include <zephyr/http/https_session.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class session_t>
 	class https_server_impl_t : public tcps_server_impl_t<derived_t, session_t>
@@ -85,7 +85,7 @@ namespace asio2::detail
 		/**
 		 * @function : bind recv listener
 		 * @param    : fun - a user defined callback function
-		 * Function signature : void(std::shared_ptr<asio2::https_session>& session_ptr, http::request<http::string_body>& req)
+		 * Function signature : void(std::shared_ptr<zephyr::https_session>& session_ptr, http::request<http::string_body>& req)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_recv(F&& fun, C&&... obj)
@@ -100,7 +100,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	template<class session_t>
 	class https_server_t : public detail::https_server_impl_t<https_server_t<session_t>, session_t>
