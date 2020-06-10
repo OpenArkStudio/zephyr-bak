@@ -34,7 +34,7 @@
 // |                               |                              |       v
 // +-------------------------------+------------------------------+      ---
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	class icmp_header
 	{

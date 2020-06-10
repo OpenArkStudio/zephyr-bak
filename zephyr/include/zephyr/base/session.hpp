@@ -51,7 +51,7 @@
 #include <zephyr/base/component/connect_timeout_cp.hpp>
 #include <zephyr/base/component/event_queue_cp.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class socket_t, class buffer_t>
 	class session_impl_t
@@ -132,7 +132,7 @@ namespace asio2::detail
 		}
 
 	public:
-		/**
+        virtual /**
 		 * @function : stop session
 		 * note : this function must be noblocking,if it's blocking,will cause circle lock in session_mgr::stop function
 		 */

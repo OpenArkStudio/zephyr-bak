@@ -44,7 +44,7 @@
 // +--------------------------------------------------------------+      ---
 
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	class ipv6_header
 	{

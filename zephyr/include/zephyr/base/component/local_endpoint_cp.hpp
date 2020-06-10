@@ -17,7 +17,7 @@
 
 #include <zephyr/base/selector.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class endpoint_type>
 	class local_endpoint_cp

@@ -19,7 +19,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-namespace asio2::detail::kcp {
+namespace zephyr::detail::kcp {
 
 //=====================================================================
 // 32BIT INTEGER DEFINITION 

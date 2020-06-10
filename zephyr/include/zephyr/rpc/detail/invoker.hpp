@@ -37,7 +37,7 @@
 #include <zephyr/rpc/detail/serialization.hpp>
 #include <zephyr/rpc/detail/protocol.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class T>
 	struct result_t

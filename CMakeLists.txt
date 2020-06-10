@@ -53,9 +53,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 #---------------------------------------------------------------------------------------
 option(ASIO_STANDALONE "Enable asio standalone" ON) # if you wanna use http/websocket, please set this option off.
 option(ZEPHYR_USE_SSL "Enable ssl" OFF)
+option(ZEPHYR_ENABLE_RPC "Enable rpc" OFF)
 option(ZEPHYR_BUILD_TESTS "Enable build tests" ON)
 option(ZEPHYR_BUILD_EXAMPLES "Enable build examples" ON)
-option(ZEPHYR_BUILD_BENCHMARK "Enable build benchmarks" OFF)
+option(ZEPHYR_BUILD_BENCHMARK "Enable build benchmarks" ON)
 
 #---------------------------------------------------------------------------------------
 # Get version number.
@@ -120,10 +121,23 @@ else()
         message(FATAL_ERROR "boost library is needed but can‘t be found")
     endif()
     include_directories(${Boost_INCLUDE_DIRS})
+    link_directories(${Boost_LIBRARY_DIRS})
 endif ()
 
+if(ZEPHYR_ENABLE_RPC)
+    # protobuf
+    find_package(Protobuf 3.0.0 REQUIRED)
+    if (PROTOBUF_FOUND)
+        message(STATUS "protobuf library found")
+    else ()
+        message(FATAL_ERROR "protobuf library is needed but cant be found")
+    endif ()
+    add_definitions(-DZEPHYR_ENABLE_RPC)
+    include_directories(${Protobuf_INCLUDE_DIRS})
+endif()
+
 # zephyr include files
-include_directories(${ROOT_DIR}/include)
+include_directories(${ROOT_DIR}/zephyr/include)
 
 
 #---------------------------------------------------------------------------------------
@@ -162,5 +176,5 @@ endif()
 #---------------------------------------------------------------------------------------
 if(ZEPHYR_BUILD_BENCHMARK)
     message(STATUS "Building benchmark ...")
-    #add_subdirectory(benchmark)
+    add_subdirectory(benchmark)
 endif()

@@ -26,7 +26,7 @@
 
 #include <zephyr/base/selector.hpp>
 
-namespace asio2
+namespace zephyr
 {
 
 	#ifdef ZEPHYR_ASSERT
@@ -42,12 +42,12 @@ namespace asio2
 	/**
 	 * ssl error code is a unsigned int value,the highest 8 bits is the library code(more details,see openssl/err.h)
 	 * 
-	 * the asio2 custom error code rule : the highest 8 bits is 0,the 23 bit is 1,
+	 * the zephyr custom error code rule : the highest 8 bits is 0,the 23 bit is 1,
 	 *
 	 * the http_parser error code rule : the highest 9 bits is 0,the 22 bit is 1,
 	 *
 	 * we check the error_category like this : 
-	 * if the 23 bit is 1,it is asio2_category.
+	 * if the 23 bit is 1,it is zephyr_category.
 	 * if the 22 bit is 1,it is http_parser error code.
 	 * if the error number's highest 8 bits is more than 0,it is ssl ssl_category.
 	 * otherwise it is system_category.

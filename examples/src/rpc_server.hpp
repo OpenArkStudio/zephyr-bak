@@ -1,6 +1,6 @@
 #pragma once
 
-#include <zephyr/asio2.hpp>
+#include <zephyr/zephyr.hpp>
 
 class user
 {
@@ -32,8 +32,8 @@ public:
 	}
 
 	// If you want to know which client called this function, set the first parameter
-	// to std::shared_ptr<asio2::rpc_session>& session_ptr
-	user get_user(std::shared_ptr<asio2::rpc_session>& session_ptr)
+	// to std::shared_ptr<zephyr::rpc_session>& session_ptr
+	user get_user(std::shared_ptr<zephyr::rpc_session>& session_ptr)
 	{
 		user u;
 		u.name = "lilei";
@@ -43,8 +43,8 @@ public:
 	}
 
 	// If you want to know which client called this function, set the first parameter
-	// to std::shared_ptr<asio2::rpc_session>& session_ptr
-	void del_user(std::shared_ptr<asio2::rpc_session>& session_ptr, const user& u)
+	// to std::shared_ptr<zephyr::rpc_session>& session_ptr
+	void del_user(std::shared_ptr<zephyr::rpc_session>& session_ptr, const user& u)
 	{
 		printf("del_user is called by %s %u : %s %d ",
 			session_ptr->remote_address().c_str(), session_ptr->remote_port(),
@@ -59,10 +59,10 @@ public:
 
 void run_rpc_server(std::string_view host, std::string_view port)
 {
-	asio2::rpc_server server;
+	zephyr::rpc_server server;
 	//while (1) // use infinite loop and sleep 2 seconds to test start and stop
 	{
-		std::shared_ptr<asio2::rpc_session> client_ptr;
+		std::shared_ptr<zephyr::rpc_session> client_ptr;
 		printf("\n");
 		server.start_timer(1, std::chrono::seconds(1), []() {});
 		server.bind_recv([&server](auto & session_ptr, std::string_view s)
@@ -84,7 +84,7 @@ void run_rpc_server(std::string_view host, std::string_view port)
 		{
 			printf("client leave : %s %u %s\n",
 				session_ptr->remote_address().c_str(),
-				session_ptr->remote_port(), asio2::last_error_msg().c_str());
+				session_ptr->remote_port(), zephyr::last_error_msg().c_str());
 		}).bind_start([&server](asio::error_code ec)
 		{
 			printf("start rpc server : %s %u %d %s\n", server.listen_address().c_str(), server.listen_port(),
@@ -112,7 +112,7 @@ void run_rpc_server(std::string_view host, std::string_view port)
 
 		// Using tcp dgram mode as the underlying communication support(This is the default setting)
 		// Then must use "use_dgram" parameter.
-		server.start(host, port, asio2::use_dgram);
+		server.start(host, port, zephyr::use_dgram);
 
 		// Using websocket as the underlying communication support.
 		// Need to goto the tail of the (rpc_client.hpp rpc_server.hpp rpc_session.hpp) files,

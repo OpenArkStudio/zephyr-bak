@@ -26,7 +26,7 @@
 #include <zephyr/base/listener.hpp>
 #include <zephyr/base/detail/condition_wrap.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class socket_t>
 	class connect_cp

@@ -19,7 +19,7 @@
 #include <zephyr/udp/impl/udp_send_op.hpp>
 #include <zephyr/udp/detail/kcp_util.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template <class>                      class session_mgr_t;
 	template <class, class>               class udp_server_impl_t;
@@ -58,7 +58,7 @@ namespace asio2::detail
 			io_t & rwio,
 			std::size_t init_buffer_size,
 			std::size_t max_buffer_size,
-			asio2::buffer_wrap<asio2::linear_buffer> & buffer,
+			zephyr::buffer_wrap<zephyr::linear_buffer> & buffer,
 			socket_t socket,
 			asio::ip::udp::endpoint & endpoint
 		)
@@ -422,7 +422,7 @@ namespace asio2::detail
 
 	protected:
 		/// buffer
-		asio2::buffer_wrap<asio2::linear_buffer>      & buffer_ref_;
+		zephyr::buffer_wrap<zephyr::linear_buffer>      & buffer_ref_;
 
 		/// used for session_mgr's session unordered_map key
 		asio::ip::udp::endpoint                         remote_endpoint_;
@@ -437,7 +437,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	class udp_session : public detail::udp_session_impl_t<udp_session, asio::ip::udp::socket&, detail::empty_buffer>
 	{

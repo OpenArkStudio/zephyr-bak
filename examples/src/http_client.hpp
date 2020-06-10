@@ -1,6 +1,6 @@
 #pragma once
 
-#include <zephyr/asio2.hpp>
+#include <zephyr/zephyr.hpp>
 
 void run_http_client(std::string_view host, std::string_view port)
 {
@@ -14,20 +14,20 @@ void run_http_client(std::string_view host, std::string_view port)
 	//Accept-Encoding: gzip, deflate, br
 	//Accept-Language: zh-CN,zh;q=0.8
 
-	asio2::error_code ec;
+	zephyr::error_code ec;
 	//auto req1 = http::make_request("http://www.baidu.com/get_user?name=a");
 	//auto req2 = http::make_request("http://www.baidu.com");
 	//auto req3 = http::make_request("GET / HTTP/1.1\r\nHost: 127.0.0.1:8443\r\n\r\n");
 	//req3.set(http::field::timeout, 5000); // Used to Setting Read Timeout, 5000 milliseconds, default is 3000 milliseconds
 	//auto req4 = http::make_request("GET / HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n");
-	//auto rep1 = asio2::http_client::execute("http://www.baidu.com/get_user?name=a", ec);
-	//auto path = asio2::http::url_to_path("/get_user?name=a");
-	//auto rep2 = asio2::http_client::execute("127.0.0.1", "8080", req3);
-	//auto rep3 = asio2::http_client::execute("http://127.0.0.1:8080/get_user?name=a", ec);
+	//auto rep1 = zephyr::http_client::execute("http://www.baidu.com/get_user?name=a", ec);
+	//auto path = zephyr::http::url_to_path("/get_user?name=a");
+	//auto rep2 = zephyr::http_client::execute("127.0.0.1", "8080", req3);
+	//auto rep3 = zephyr::http_client::execute("http://127.0.0.1:8080/get_user?name=a", ec);
 	//if (ec) std::cout << ec.message() << std::endl;
 	//std::cout << rep3 << std::endl;
 
-	auto rep = asio2::http_client::execute(host, port, "/api/get_user?name=zhl", ec);
+	auto rep = zephyr::http_client::execute(host, port, "/api/get_user?name=zhl", ec);
 	std::cout << rep << std::endl << "--------------------\n";
 
 	//std::string en = http::url_encode("http://www.baidu.com/get_user?name=zhl");
@@ -35,15 +35,15 @@ void run_http_client(std::string_view host, std::string_view port)
 	//std::string de = http::url_decode(en);
 	//std::cout << de << std::endl;
 
-	asio2::http_client client;
+	zephyr::http_client client;
 
 	client.bind_recv([&](http::response<http::string_body>& rep)
 	{
 		std::cout << std::endl << "--------------------\n" << rep;
 	}).bind_connect([&](asio::error_code ec)
 	{
-		if (asio2::get_last_error())
-			printf("connect failure : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+		if (zephyr::get_last_error())
+			printf("connect failure : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 		else
 			printf("connect success : %s %u\n", client.local_address().c_str(), client.local_port());
 
@@ -75,7 +75,7 @@ void run_http_client(std::string_view host, std::string_view port)
 
 	}).bind_disconnect([](asio::error_code ec)
 	{
-		printf("disconnect : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+		printf("disconnect : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 	});
 
 	client.start(host, port);
@@ -88,10 +88,10 @@ void run_http_client(std::string_view host, std::string_view port)
 void run_https_client(std::string_view host, std::string_view port)
 {
 #if !defined(ASIO_STANDALONE) && defined(ZEPHYR_USE_SSL)
-	//auto rep = asio2::http_client::execute(host, port, "/api/get_user?name=zhl");
+	//auto rep = zephyr::http_client::execute(host, port, "/api/get_user?name=zhl");
 	//std::cout << rep << std::endl << "--------------------\n";
 
-	asio2::https_client client;
+	zephyr::https_client client;
 	client.set_cert_file("server.crt");
 	client.connect_timeout(std::chrono::seconds(10));
 	client.bind_recv([&](http::response<http::string_body>& rep)
@@ -99,8 +99,8 @@ void run_https_client(std::string_view host, std::string_view port)
 		std::cout << std::endl << "--------------------\n" << rep << std::endl;
 	}).bind_connect([&](asio::error_code ec)
 	{
-		if (asio2::get_last_error())
-			printf("connect failure : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+		if (zephyr::get_last_error())
+			printf("connect failure : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 		else
 			printf("connect success : %s %u\n", client.local_address().c_str(), client.local_port());
 
@@ -108,10 +108,10 @@ void run_https_client(std::string_view host, std::string_view port)
 		client.send(msg);
 	}).bind_disconnect([](asio::error_code ec)
 	{
-		printf("disconnect : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+		printf("disconnect : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 	}).bind_handshake([&](asio::error_code ec)
 	{
-		printf("handshake : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+		printf("handshake : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 	});
 	client.start(host, port, "/api/get_user?name=zhl");
 	while (std::getchar() != '\n');

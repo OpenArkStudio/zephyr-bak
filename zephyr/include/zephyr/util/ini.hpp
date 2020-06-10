@@ -59,7 +59,7 @@
  * Linux platform needs to add -lpthread option in link libraries
  */
 
-namespace asio2
+namespace zephyr
 {
 	template<class T>
 	struct convert;
@@ -179,7 +179,7 @@ namespace asio2
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	namespace detail
 	{
@@ -356,7 +356,7 @@ namespace asio2
 
 		template<class R, class Traits = std::char_traits<char_type>, class Allocator = std::allocator<char_type>>
 		inline typename std::enable_if_t<std::is_same_v<decltype(
-			asio2::convert<R>::stov(std::basic_string<char_type, Traits, Allocator>()),
+			zephyr::convert<R>::stov(std::basic_string<char_type, Traits, Allocator>()),
 			std::true_type()), std::true_type>, R>
 			get(std::basic_string_view<char_type, Traits> sec, std::basic_string_view<char_type, Traits> key, R default_val = R())
 		{
@@ -364,7 +364,7 @@ namespace asio2
 			{
 				std::basic_string<char_type, Traits, Allocator> val;
 				if (this->_get(sec, key, val))
-					default_val = asio2::convert<R>::stov(val);
+					default_val = zephyr::convert<R>::stov(val);
 			}
 			catch (std::exception &) {}
 			return default_val;
@@ -385,7 +385,7 @@ namespace asio2
 
 		template<class R, class Traits = std::char_traits<char_type>, class Allocator = std::allocator<char_type>>
 		inline typename std::enable_if_t<std::is_same_v<decltype(
-			asio2::convert<R>::stov(std::basic_string<char_type, Traits, Allocator>()),
+			zephyr::convert<R>::stov(std::basic_string<char_type, Traits, Allocator>()),
 			std::true_type()), std::true_type>, R>
 			get(std::basic_string_view<char_type, Traits> sec, std::basic_string_view<char_type, Traits> key,
 				std::error_code & ec, R default_val = R())
@@ -394,7 +394,7 @@ namespace asio2
 			{
 				std::basic_string<char_type, Traits, Allocator> val;
 				if (this->_get(sec, key, val))
-					default_val = asio2::convert<R>::stov(val);
+					default_val = zephyr::convert<R>::stov(val);
 			}
 			catch (std::invalid_argument &)
 			{

@@ -37,7 +37,7 @@
 #include <zephyr/base/component/user_timer_cp.hpp>
 #include <zephyr/base/component/post_cp.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t>
 	class timer_impl_t
@@ -101,7 +101,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	class timer : public detail::timer_impl_t<timer>
 	{

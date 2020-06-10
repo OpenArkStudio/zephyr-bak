@@ -31,7 +31,7 @@
 
 # 2018-01-24 version 1.3:
 
-  * Replace boost::asio with asio standalone to avoid conflicts when use boost and asio2 at the same time.
+  * Replace boost::asio with asio standalone to avoid conflicts when use boost and zephyr at the same time.
   * Adjust and optimize some other code.
 
 # 2018-01-06 version 1.2:

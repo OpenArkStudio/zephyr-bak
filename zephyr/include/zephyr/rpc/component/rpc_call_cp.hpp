@@ -61,7 +61,7 @@ auto f(Args&& ... args){
 #include <zephyr/rpc/detail/protocol.hpp>
 #include <zephyr/rpc/detail/invoker.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, bool isSession>
 	class rpc_call_cp

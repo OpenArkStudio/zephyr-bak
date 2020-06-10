@@ -1,0 +1,4 @@
+# ignore some code from clang-format checks
+
+asio/*
+zephyr/*

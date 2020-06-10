@@ -29,7 +29,7 @@
 
 #include <zephyr/udp/detail/ikcp.h>
 
-namespace asio2::detail::kcp
+namespace zephyr::detail::kcp
 {
 	// __attribute__((aligned(1)))
 #if defined(__GNUC__) || defined(__GNUG__)
@@ -167,7 +167,7 @@ namespace asio2::detail::kcp
 		if (s.size() != sizeof(kcphdr))
 			return false;
 
-		kcphdr * hdr = (kcphdr*)(s.data());
+		auto * hdr = (kcphdr*)(s.data());
 		if (!(!hdr->thf_urg && !hdr->thf_ack && !hdr->thf_psh && !hdr->thf_rst && !hdr->thf_syn && hdr->thf_fin))
 			return false;
 
@@ -178,7 +178,8 @@ namespace asio2::detail::kcp
 	template<typename = void>
 	inline kcphdr make_kcphdr_syn(std::uint32_t seq)
 	{
-		kcphdr hdr = { 0 };
+        kcphdr hdr;
+        memset(&hdr, 0x0, sizeof(kcphdr));
 		hdr.th_seq = seq;
 		hdr.thf_syn = 1;
 		hdr.th_sum = checksum(reinterpret_cast<unsigned short *>(&hdr),
@@ -190,7 +191,8 @@ namespace asio2::detail::kcp
 	template<typename = void>
 	inline kcphdr make_kcphdr_synack(std::uint32_t seq, std::uint32_t ack)
 	{
-		kcphdr hdr = { 0 };
+        kcphdr hdr;
+        memset(&hdr, 0x0, sizeof(kcphdr));
 		hdr.th_seq = seq;
 		hdr.th_ack = ack + 1;
 		hdr.thf_ack = 1;
@@ -204,7 +206,8 @@ namespace asio2::detail::kcp
 	template<typename = void>
 	inline kcphdr make_kcphdr_ack(std::uint32_t ack)
 	{
-		kcphdr hdr = { 0 };
+        kcphdr hdr;
+        memset(&hdr, 0x0, sizeof(kcphdr));
 		hdr.th_ack = ack + 1;
 		hdr.thf_ack = 1;
 		hdr.th_sum = checksum(reinterpret_cast<unsigned short *>(&hdr),
@@ -216,7 +219,8 @@ namespace asio2::detail::kcp
 	template<typename = void>
 	inline kcphdr make_kcphdr_fin(std::uint32_t seq)
 	{
-		kcphdr hdr = { 0 };
+		kcphdr hdr;
+		memset(&hdr, 0x0, sizeof(kcphdr));
 		hdr.th_seq = seq;
 		hdr.thf_fin = 1;
 		hdr.th_sum = checksum(reinterpret_cast<unsigned short *>(&hdr),

@@ -27,7 +27,7 @@
 
 #include <zephyr/base/detail/allocator.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	/**
 	 * the session manager interface

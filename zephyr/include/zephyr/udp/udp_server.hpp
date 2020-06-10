@@ -19,7 +19,7 @@
 #include <zephyr/udp/udp_session.hpp>
 #include <zephyr/base/detail/linear_buffer.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class session_t>
 	class udp_server_impl_t : public server_impl_t<derived_t, session_t>
@@ -123,7 +123,7 @@ namespace asio2::detail
 		 * @param    : obj - a pointer or reference to a class object, this parameter can be none
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
-		 * Function signature : void(std::shared_ptr<asio2::udp_session>& session_ptr, std::string_view s)
+		 * Function signature : void(std::shared_ptr<zephyr::udp_session>& session_ptr, std::string_view s)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_recv(F&& fun, C&&... obj)
@@ -141,7 +141,7 @@ namespace asio2::detail
 		 * the class object's pointer or refrence.
 		 * This notification is invoked after the connection is fully established,
 		 * and only after the connect/handshake/upgrade are completed.
-		 * Function signature : void(std::shared_ptr<asio2::udp_session>& session_ptr)
+		 * Function signature : void(std::shared_ptr<zephyr::udp_session>& session_ptr)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_connect(F&& fun, C&&... obj)
@@ -159,7 +159,7 @@ namespace asio2::detail
 		 * the class object's pointer or refrence.
 		 * This notification is invoked before the connection is disconnected, you can call
 		 * get_last_error/last_error_msg, etc, to get the disconnected error information
-		 * Function signature : void(std::shared_ptr<asio2::udp_session>& session_ptr)
+		 * Function signature : void(std::shared_ptr<zephyr::udp_session>& session_ptr)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_disconnect(F&& fun, C&&... obj)
@@ -191,7 +191,7 @@ namespace asio2::detail
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
 		 * This notification is called after the server starts up, whether successful or unsuccessful
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_start(F&& fun, C&&... obj)
@@ -207,7 +207,7 @@ namespace asio2::detail
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
 		 * This notification is called before the server is ready to stop
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_stop(F&& fun, C&&... obj)
@@ -222,7 +222,7 @@ namespace asio2::detail
 		 * @param    : obj - a pointer or reference to a class object, this parameter can be none
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
-		 * Function signature : void(std::shared_ptr<asio2::udp_session>& session_ptr, asio::error_code ec)
+		 * Function signature : void(std::shared_ptr<zephyr::udp_session>& session_ptr, asio::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_handshake(F&& fun, C&&... obj)
@@ -536,11 +536,11 @@ namespace asio2::detail
 		asio::ip::udp::endpoint  remote_endpoint_;
 
 		/// buffer
-		asio2::buffer_wrap<asio2::linear_buffer> buffer_;
+		zephyr::buffer_wrap<zephyr::linear_buffer> buffer_;
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	template<class session_t>
 	class udp_server_t : public detail::udp_server_impl_t<udp_server_t<session_t>, session_t>

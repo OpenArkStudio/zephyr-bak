@@ -28,7 +28,7 @@
 
 #include <zephyr/udp/detail/kcp_util.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	/*
 	 * because udp is connectionless, in order to simplify the code logic, KCP shakes

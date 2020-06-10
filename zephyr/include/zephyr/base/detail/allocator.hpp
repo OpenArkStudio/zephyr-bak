@@ -21,7 +21,7 @@
 #include <atomic>
 #include <fstream>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	//static std::size_t max_size_ = 0;
 	//inline void log_max_size(std::size_t size)
@@ -134,7 +134,7 @@ namespace asio2::detail
 		typename std::aligned_storage<SizeN::size>::type storage_;
 
 		// Whether the handler-based custom allocation storage has been used.
-		std::atomic_flag in_use_{ ATOMIC_FLAG_INIT };
+		std::atomic_flag in_use_ = ATOMIC_FLAG_INIT;
 	};
 
 	// The allocator to be associated with the handler objects. This allocator only

@@ -19,7 +19,7 @@
 
 #include <zephyr/base/selector.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class socket_t>
 	class socket_cp

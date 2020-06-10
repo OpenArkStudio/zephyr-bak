@@ -52,7 +52,7 @@
 #include <zephyr/base/component/event_queue_cp.hpp>
 #include <zephyr/base/component/reconnect_timer_cp.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class socket_t, class buffer_t>
 	class client_impl_t

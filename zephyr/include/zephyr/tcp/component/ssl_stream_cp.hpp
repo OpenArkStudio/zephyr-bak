@@ -29,7 +29,7 @@
 #include <zephyr/base/detail/allocator.hpp>
 #include <zephyr/base/detail/condition_wrap.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class socket_t, bool isSession>
 	class ssl_stream_cp

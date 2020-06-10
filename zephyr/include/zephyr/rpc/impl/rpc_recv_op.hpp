@@ -29,7 +29,7 @@
 #include <zephyr/rpc/detail/invoker.hpp>
 #include <zephyr/rpc/component/rpc_call_cp.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, bool isSession>
 	class rpc_recv_op

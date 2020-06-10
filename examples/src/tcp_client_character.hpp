@@ -1,19 +1,19 @@
 #pragma once
 
-#include <zephyr/asio2.hpp>
+#include <zephyr/zephyr.hpp>
 
 void run_tcp_client_character(std::string_view host, std::string_view port)
 {
 	int count = 1;
-	std::unique_ptr<asio2::tcp_client[]> clients = std::make_unique<asio2::tcp_client[]>(count);
+	std::unique_ptr<zephyr::tcp_client[]> clients = std::make_unique<zephyr::tcp_client[]>(count);
 	for (int i = 0; i < count; ++i)
 	{
 		auto & client = clients[i];
 		client.start_timer(1, std::chrono::seconds(1), []() {});
 		client.bind_connect([&](asio::error_code ec)
 		{
-			if (asio2::get_last_error())
-				printf("connect failure : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			if (zephyr::get_last_error())
+				printf("connect failure : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 			else
 				printf("connect success : %s %u\n", client.local_address().c_str(), client.local_port());
 
@@ -31,7 +31,7 @@ void run_tcp_client_character(std::string_view host, std::string_view port)
 
 		}).bind_disconnect([](asio::error_code ec)
 		{
-			printf("disconnect : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			printf("disconnect : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 		}).bind_recv([&](std::string_view sv)
 		{
 			printf("recv : %u %.*s\n", (unsigned)sv.size(), (int)sv.size(), sv.data());

@@ -35,7 +35,7 @@
 
 #include <zephyr/base/component/data_persistence_cp.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, bool isSession>
 	class udp_send_cp : public data_persistence_cp<derived_t>

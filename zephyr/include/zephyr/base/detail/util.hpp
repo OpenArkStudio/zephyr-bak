@@ -35,7 +35,7 @@
 #include <zephyr/base/iopool.hpp>
 #include <zephyr/base/error.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	enum class state_t : std::int8_t { stopped, stopping, starting, started };
 
@@ -67,7 +67,7 @@ namespace asio2::detail
 	static std::size_t constexpr http_frame_size = 1536;
 }
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	/**
 	 * BKDR Hash Function
@@ -118,7 +118,7 @@ namespace asio2::detail
 		}
 
 		template<class ...Args>
-		static inline constexpr const void unused(Args&&...) noexcept {}
+		static inline constexpr void unused(Args&&...) noexcept {}
 	};
 
 	template<class T>
@@ -350,7 +350,7 @@ namespace std
 		{
 			//return std::hash<std::string_view>()(std::string_view{
 			//	reinterpret_cast<std::string_view::const_pointer>(&s),sizeof(argument_type) });
-			return asio2::detail::bkdr_hash((const unsigned char *)(&s), sizeof(argument_type));
+			return zephyr::detail::bkdr_hash((const unsigned char *)(&s), sizeof(argument_type));
 		}
 	};
 
@@ -362,7 +362,7 @@ namespace std
 		{
 			//return std::hash<std::string_view>()(std::string_view{
 			//	reinterpret_cast<std::string_view::const_pointer>(&s),sizeof(argument_type) });
-			return asio2::detail::bkdr_hash((const unsigned char *)(&s), sizeof(argument_type));
+			return zephyr::detail::bkdr_hash((const unsigned char *)(&s), sizeof(argument_type));
 		}
 	};
 }

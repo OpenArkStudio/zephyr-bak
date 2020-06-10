@@ -21,7 +21,7 @@
 #include <zephyr/udp/detail/kcp_util.hpp>
 #include <zephyr/udp/component/kcp_stream_cp.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class socket_t, class buffer_t>
 	class udp_client_impl_t
@@ -183,7 +183,7 @@ namespace asio2::detail
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
 		 * This notification is called after the client connection completed, whether successful or unsuccessful
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_connect(F&& fun, C&&... obj)
@@ -199,7 +199,7 @@ namespace asio2::detail
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
 		 * This notification is called before the client is ready to disconnect
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_disconnect(F&& fun, C&&... obj)
@@ -229,7 +229,7 @@ namespace asio2::detail
 		 * @param    : obj - a pointer or reference to a class object, this parameter can be none
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_handshake(F&& fun, C&&... obj)
@@ -515,12 +515,12 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
-	class udp_client : public detail::udp_client_impl_t<udp_client, asio::ip::udp::socket, asio2::linear_buffer>
+	class udp_client : public detail::udp_client_impl_t<udp_client, asio::ip::udp::socket, zephyr::linear_buffer>
 	{
 	public:
-		using udp_client_impl_t<udp_client, asio::ip::udp::socket, asio2::linear_buffer>::udp_client_impl_t;
+		using udp_client_impl_t<udp_client, asio::ip::udp::socket, zephyr::linear_buffer>::udp_client_impl_t;
 	};
 }
 

@@ -20,7 +20,7 @@
 
 #include <memory>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 
 	/**

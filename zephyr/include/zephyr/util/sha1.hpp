@@ -42,7 +42,7 @@ under the same license as the original, which is listed below.
 
 #include <string>
 
-namespace asio2
+namespace zephyr
 {
 	class sha1
 	{
@@ -245,6 +245,6 @@ namespace asio2
 		}
 	};
 
-} // namespace asio2
+} // namespace zephyr
 
 #endif // __ZEPHYR_SHA1_IMPL_HPP__

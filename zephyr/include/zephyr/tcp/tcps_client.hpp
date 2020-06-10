@@ -20,7 +20,7 @@
 #include <zephyr/tcp/tcp_client.hpp>
 #include <zephyr/tcp/component/ssl_stream_cp.hpp>
 
-namespace asio2::detail
+namespace zephyr::detail
 {
 	template<class derived_t, class socket_t, class buffer_t>
 	class tcps_client_impl_t
@@ -99,7 +99,7 @@ namespace asio2::detail
 		 * @param    : obj - a pointer or reference to a class object, this parameter can be none
 		 * if fun is nonmember function, the obj param must be none, otherwise the obj must be the
 		 * the class object's pointer or refrence.
-		 * Function signature : void(asio2::error_code ec)
+		 * Function signature : void(zephyr::error_code ec)
 		 */
 		template<class F, class ...C>
 		inline derived_t & bind_handshake(F&& fun, C&&... obj)
@@ -139,7 +139,7 @@ namespace asio2::detail
 	};
 }
 
-namespace asio2
+namespace zephyr
 {
 	class tcps_client : public detail::tcps_client_impl_t<tcps_client, asio::ip::tcp::socket, asio::streambuf>
 	{

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <zephyr/asio2.hpp>
+#include <zephyr/zephyr.hpp>
 
 void run_udp_client_kcp(std::string_view host, std::string_view port)
 {
 	//while (1)
 	{
 		printf("\n");
-		asio2::udp_client client;
+		zephyr::udp_client client;
 		client.connect_timeout(std::chrono::seconds(3));
 		//client.local_endpoint(asio::ip::address_v4::from_string("127.0.0.1"), 9876);
 		client.local_endpoint(asio::ip::udp::v4(), 15678);
@@ -15,8 +15,8 @@ void run_udp_client_kcp(std::string_view host, std::string_view port)
 		//msg.resize(15000, 'a');
 		client.bind_connect([&](asio::error_code ec)
 		{
-			if (asio2::get_last_error())
-				printf("connect failure : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			if (zephyr::get_last_error())
+				printf("connect failure : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 			else
 				printf("connect success : %s %u\n", client.local_address().c_str(), client.local_port());
 
@@ -24,7 +24,7 @@ void run_udp_client_kcp(std::string_view host, std::string_view port)
 			client.send(std::string("<abcdefghijklmnopqrstovuxyz0123456789>"));
 		}).bind_disconnect([](asio::error_code ec)
 		{
-			printf("disconnect : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			printf("disconnect : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 		}).bind_recv([&](std::string_view sv)
 		{
 			printf("recv : %u %.*s\n", (unsigned)sv.size(), (int)sv.size(), sv.data());
@@ -51,17 +51,17 @@ void run_udp_client_kcp(std::string_view host, std::string_view port)
 
 		}).bind_handshake([&](asio::error_code ec)
 		{
-			if (asio2::get_last_error())
-				printf("handshake failure : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+			if (zephyr::get_last_error())
+				printf("handshake failure : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 			else
-				printf("handshake success : %d %s\n", asio2::last_error_val(), asio2::last_error_msg().c_str());
+				printf("handshake success : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
 
 			//client.send(msg);
-			if (!asio2::get_last_error())
+			if (!zephyr::get_last_error())
 				client.send(std::string("<abcdefghijklmnopqrstovuxyz0123456789abcdefghijklmnopqrstovuxyz0123456789>"));
 		});
 
-		client.async_start(host, port, asio2::use_kcp);
+		client.async_start(host, port, zephyr::use_kcp);
 		//auto * kp = client.kcp();
 
 		while (std::getchar() != '\n');

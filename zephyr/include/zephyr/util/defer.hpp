@@ -19,7 +19,7 @@
 
 #include <functional>
 
-namespace asio2
+namespace zephyr
 {
 
 	class defer
@@ -51,7 +51,7 @@ namespace asio2
 	};
 
 #define ZEPHYR_CONCAT(a, b) a##b
-#define ZEPHYR_MAKE_DEFER(line) ::asio2::defer ZEPHYR_CONCAT(_asio2_defer_, line) = [&]()
+#define ZEPHYR_MAKE_DEFER(line) ::zephyr::defer ZEPHYR_CONCAT(_zephyr_defer_, line) = [&]()
 #define ZEPHYR_DEFER ZEPHYR_MAKE_DEFER(__LINE__)
 
 }
