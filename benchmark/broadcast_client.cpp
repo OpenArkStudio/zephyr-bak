@@ -10,26 +10,26 @@
 #include <zephyr/zephyr.hpp>
 #include <zephyr/util/packet.hpp>
 
-std::atomic_llong TotalRecvPacketNum = ATOMIC_VAR_INIT(0);
-std::atomic_llong TotalRecvSize = ATOMIC_VAR_INIT(0);
+std::atomic_llong total_recv_packet_num = ATOMIC_VAR_INIT(0);
+std::atomic_llong total_recv_size = ATOMIC_VAR_INIT(0);
 
-std::string random_string(std::size_t length)
-{
-    auto random_str = []() -> char {
-        const char charset[] = "0123456789"
-                               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                               "abcdefghijklmnopqrstuvwxyz";
-        const size_t max_index = (sizeof(charset) - 1);
-        return charset[rand() % max_index];
-    };
-    std::string str(length, 0);
-    std::generate_n(str.begin(), length, random_str);
-    return str;
-}
+//std::string random_string(std::size_t length)
+//{
+//    auto random_str = []() -> char {
+//        const char charset[] = "0123456789"
+//                               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+//                               "abcdefghijklmnopqrstuvwxyz";
+//        const size_t max_index = (sizeof(charset) - 1);
+//        return charset[rand() % max_index];
+//    };
+//    std::string str(length, 0);
+//    std::generate_n(str.begin(), length, random_str);
+//    return str;
+//}
 
 int main(int argc, char* argv[])
 {
-    if (argc != 5)
+    if (argc != 6)
     {
         fprintf(stderr, "Usage: <host> <port> <client num> <packet size>\n");
         exit(-1);
@@ -41,6 +41,33 @@ int main(int argc, char* argv[])
     std::size_t packet_size = atoi(argv[4]);
 
     //std::string packet = std::string(packet_size, 'a'); //random_string(packet_size);
+
+    auto now = std::chrono::steady_clock::now();
+    zephyr::timer log_timer;
+    log_timer.start_timer(1, std::chrono::seconds(1), [now]() mutable {
+        auto diff = std::chrono::steady_clock::now() - now;
+        auto msDiff = std::chrono::duration_cast<std::chrono::milliseconds>(diff).count();
+        if (total_recv_size / 1024 == 0)
+        {
+            std::cout << "total recv : " << total_recv_size << " bytes/s"
+                      << ", num " << total_recv_packet_num << std::endl;
+        }
+        else if ((total_recv_size / 1024) / 1024 == 0)
+        {
+            std::cout << "total recv : " << total_recv_size / 1024 << " K/s"
+                      << ", num " << total_recv_packet_num << std::endl;
+        }
+        else
+        {
+            std::cout << "total recv : " << (total_recv_size / 1024) / 1024 << " M/s"
+                      << ", num " << total_recv_packet_num << std::endl;
+        }
+
+        now = std::chrono::steady_clock::now();
+        total_recv_size = 0;
+        total_recv_packet_num = 0;
+        now = std::chrono::steady_clock::now();
+    });
 
     std::map<std::size_t, std::shared_ptr<zephyr::tcp_client>> clients;
     for (std::size_t i = 0; i < client_num; ++i)
@@ -97,8 +124,8 @@ int main(int argc, char* argv[])
                         auto packet_len = rp.readUINT32();
                         if (left_len >= packet_len && packet_len >= HEAD_LEN)
                         {
-                            TotalRecvSize += packet_len;
-                            TotalRecvPacketNum++;
+                            total_recv_size += packet_len;
+                            total_recv_packet_num++;
 
                             zephyr::BasePacketReader rp(parse_str, packet_len);
                             rp.readUINT32();

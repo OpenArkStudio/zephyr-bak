@@ -9,25 +9,25 @@
 #include <utility>
 #include <zephyr/zephyr.hpp>
 
-std::string random_string(std::size_t length)
-{
-    auto random_str = []() -> char {
-        const char charset[] = "0123456789"
-                               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                               "abcdefghijklmnopqrstuvwxyz";
-        const size_t max_index = (sizeof(charset) - 1);
-        return charset[rand() % max_index];
-    };
-    std::string str(length, 0);
-    std::generate_n(str.begin(), length, random_str);
-    return str;
-}
+//std::string random_string(std::size_t length)
+//{
+//    auto random_str = []() -> char {
+//        const char charset[] = "0123456789"
+//                               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+//                               "abcdefghijklmnopqrstuvwxyz";
+//        const size_t max_index = (sizeof(charset) - 1);
+//        return charset[rand() % max_index];
+//    };
+//    std::string str(length, 0);
+//    std::generate_n(str.begin(), length, random_str);
+//    return str;
+//}
 
 int main(int argc, char* argv[])
 {
-    if (argc != 5)
+    if (argc != 6)
     {
-        fprintf(stderr, "Usage: <host> <port> <client num> <packet size>\n");
+        fprintf(stderr, "Usage: <host> <port> <client num> <packet size> <pipeline>\n");
         exit(-1);
     }
 
@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
     std::string_view port = argv[2];
     std::size_t client_num = atoi(argv[3]);
     std::size_t packet_size = atoi(argv[4]);
+    std::size_t pipeline = atoi(argv[5]);
 
     std::string packet = std::string(packet_size, 'a'); //random_string(packet_size);
 
@@ -62,14 +63,26 @@ int main(int argc, char* argv[])
                 else
                 {
                     //printf("connect success : %s %u\n", client.local_address().c_str(), client.local_port());
-                    client.send(packet);
+                    for (size_t i = 0; i < pipeline; i++)
+                    {
+                        client.send(packet);
+                    }
                 }
             })
             .bind_disconnect([&](asio::error_code ec) {
                 printf("disconnect : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
             })
             .bind_recv([&](std::string_view sv) {
-                client.send(sv);
+                const char* parse_str = sv.data();
+                auto leftLen = sv.length();
+                while (leftLen >= packet_size)
+                {
+                    client.send(std::string_view(sv.data(), packet_size));
+                    leftLen -= packet_size;
+                    parse_str += packet_size;
+                }
+                return sv.length() - leftLen;
+
                 //printf("recv: %zu\n", sv.length());
             });
 
