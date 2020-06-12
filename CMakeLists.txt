@@ -10,18 +10,18 @@ cmake_minimum_required(VERSION 3.0)
 #---------------------------------------------------------------------------------------
 # Set default build type to release
 #---------------------------------------------------------------------------------------
-if(UNIX)
-    if(NOT CMAKE_BUILD_TYPE)
+if (UNIX)
+    if (NOT CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose Release or Debug" FORCE)
-    endif()
-endif()
+    endif ()
+endif ()
 
 #---------------------------------------------------------------------------------------
 # Set CMAKE_MACOSX_RPATH
 #---------------------------------------------------------------------------------------
-if(APPLE)
+if (APPLE)
     set(CMAKE_MACOSX_RPATH 1)
-endif()
+endif ()
 
 # CMake 3.9 and newer remove any effect the following settings may have on the install_name of a target on macOS:
 #
@@ -29,10 +29,10 @@ endif()
 # SKIP_BUILD_RPATH target property
 # CMAKE_SKIP_RPATH variable
 # CMAKE_SKIP_INSTALL_RPATH variable
-if(APPLE AND (${CMAKE_MAJOR_VERSION} GREATER_EQUAL 3 AND ${CMAKE_MINOR_VERSION} GREATER_EQUAL 9))
+if (APPLE AND (${CMAKE_MAJOR_VERSION} GREATER_EQUAL 3 AND ${CMAKE_MINOR_VERSION} GREATER_EQUAL 9))
     #message("cmake version is ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}")
     option(MACOS_NO_RPATH "CMake 3.9 and newer remove any effect of RPATH" ON)
-endif()
+endif ()
 
 #---------------------------------------------------------------------------------------
 # Compiler config
@@ -71,60 +71,41 @@ project(zephyr VERSION ${ZEPHYR_VERSION} LANGUAGES CXX C)
 message(STATUS "Build zephyr: v${ZEPHYR_VERSION}")
 
 set(ROOT_DIR ${PROJECT_SOURCE_DIR})
-set(BIN_OUTPUT_DIR ${ROOT_DIR}/build/bin)
 
-if(WIN32)
-    if(MSVC_VERSION LESS 1911)
+if (WIN32)
+    if (MSVC_VERSION LESS 1911)
         message(FATAL_ERROR "need msvc++ 14.1 Visual Studio 2017+")
-    endif(MSVC_VERSION)
+    endif (MSVC_VERSION)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest -D_CRT_SECURE_NO_WARNINGS -D_SILENCE_CXX17_C_HEADER_DEPRECATION_WARNING")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${BIN_OUTPUT_DIR}")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${BIN_OUTPUT_DIR}")
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${BIN_OUTPUT_DIR}")
-
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${BIN_OUTPUT_DIR}")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${BIN_OUTPUT_DIR}")
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${BIN_OUTPUT_DIR}")
-else(UNIX)
+else (UNIX)
     if (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)
         message(FATAL_ERROR "need gcc7.0+ or other compiler supports c++ 17")
-    endif()
+    endif ()
 
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -ggdb -Wall -Wextra -D_DEBUG -fPIC")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -DNDEBUG -fPIC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
     add_definitions(-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function)
-
-    if(XCODE)
-        # set the output dir for xcode
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${BIN_OUTPUT_DIR}")
-        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${BIN_OUTPUT_DIR}")
-        set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${BIN_OUTPUT_DIR}")
-
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${BIN_OUTPUT_DIR}")
-        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${BIN_OUTPUT_DIR}")
-        set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${BIN_OUTPUT_DIR}")
-    endif(XCODE)
-endif()
+endif ()
 
 if (ASIO_STANDALONE)
     # standalone asio
     add_definitions(-DASIO_STANDALONE)
     include_directories(${ROOT_DIR}/asio/asio/include)
-else()
+else ()
     # boost.asio
     find_package(Boost 1.72.0 REQUIRED)
-    if(Boost_FOUND)
+    if (Boost_FOUND)
         message(STATUS "boost library found")
-    else()
+    else ()
         message(FATAL_ERROR "boost library is needed but can‘t be found")
-    endif()
+    endif ()
     include_directories(${Boost_INCLUDE_DIRS})
     link_directories(${Boost_LIBRARY_DIRS})
 endif ()
 
-if(ZEPHYR_ENABLE_RPC)
+if (ZEPHYR_ENABLE_RPC)
     # protobuf
     find_package(Protobuf 3.0.0 REQUIRED)
     if (PROTOBUF_FOUND)
@@ -134,7 +115,7 @@ if(ZEPHYR_ENABLE_RPC)
     endif ()
     add_definitions(-DZEPHYR_ENABLE_RPC)
     include_directories(${Protobuf_INCLUDE_DIRS})
-endif()
+endif ()
 
 # zephyr include files
 include_directories(${ROOT_DIR}/zephyr/include)
@@ -145,7 +126,6 @@ include_directories(${ROOT_DIR}/zephyr/include)
 #---------------------------------------------------------------------------------------
 message(STATUS "Current system is [${CMAKE_SYSTEM}]")
 message(STATUS "ROOT_DIR=${ROOT_DIR}")
-message(STATUS "BIN_OUTPUT_DIR=${BIN_OUTPUT_DIR}")
 message(STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 message(STATUS "Start to build all ...")
 
@@ -157,24 +137,24 @@ set(CMAKE_DEBUG_POSTFIX "_d" CACHE STRING "Set debug library postfix")
 #---------------------------------------------------------------------------------------
 # Building samples
 #---------------------------------------------------------------------------------------
-if(ZEPHYR_BUILD_EXAMPLES)
+if (ZEPHYR_BUILD_EXAMPLES)
     message(STATUS "Building examples ...")
     add_subdirectory(examples)
-endif()
+endif ()
 
 #---------------------------------------------------------------------------------------
 # Building tests
 #---------------------------------------------------------------------------------------
-if(ZEPHYR_BUILD_TESTS)
+if (ZEPHYR_BUILD_TESTS)
     message(STATUS "Building tests ...")
     enable_testing()
     #add_subdirectory(test)
-endif()
+endif ()
 
 #---------------------------------------------------------------------------------------
 # Building tests
 #---------------------------------------------------------------------------------------
-if(ZEPHYR_BUILD_BENCHMARK)
+if (ZEPHYR_BUILD_BENCHMARK)
     message(STATUS "Building benchmark ...")
     add_subdirectory(benchmark)
-endif()
+endif ()

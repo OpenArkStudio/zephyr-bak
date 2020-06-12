@@ -29,7 +29,7 @@ std::atomic_llong total_recv_size = ATOMIC_VAR_INIT(0);
 
 int main(int argc, char* argv[])
 {
-    if (argc != 6)
+    if (argc != 5)
     {
         fprintf(stderr, "Usage: <host> <port> <client num> <packet size>\n");
         exit(-1);
@@ -66,7 +66,6 @@ int main(int argc, char* argv[])
         now = std::chrono::steady_clock::now();
         total_recv_size = 0;
         total_recv_packet_num = 0;
-        now = std::chrono::steady_clock::now();
     });
 
     std::map<std::size_t, std::shared_ptr<zephyr::tcp_client>> clients;
@@ -141,6 +140,7 @@ int main(int argc, char* argv[])
                             parse_str += packet_len;
                             left_len -= packet_len;
                             flag = true;
+                            std::cout << "left_len = " << left_len << std::endl;
                             rp.skipAll();
                         }
                         rp.skipAll();
