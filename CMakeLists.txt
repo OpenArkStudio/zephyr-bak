@@ -54,9 +54,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 option(ASIO_STANDALONE "Enable asio standalone" ON) # if you wanna use http/websocket, please set this option off.
 option(ZEPHYR_USE_SSL "Enable ssl" OFF)
 option(ZEPHYR_ENABLE_RPC "Enable rpc" OFF)
-option(ZEPHYR_BUILD_TESTS "Enable build tests" ON)
-option(ZEPHYR_BUILD_EXAMPLES "Enable build examples" ON)
-option(ZEPHYR_BUILD_BENCHMARK "Enable build benchmarks" ON)
+option(ZEPHYR_BUILD_TESTS "Enable build tests" OFF)
+option(ZEPHYR_BUILD_EXAMPLES "Enable build examples" OFF)
+option(ZEPHYR_BUILD_BENCHMARK "Enable build benchmarks" OFF)
 
 #---------------------------------------------------------------------------------------
 # Get version number.
