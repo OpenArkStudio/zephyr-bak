@@ -140,7 +140,6 @@ int main(int argc, char* argv[])
                             parse_str += packet_len;
                             left_len -= packet_len;
                             flag = true;
-                            std::cout << "left_len = " << left_len << std::endl;
                             rp.skipAll();
                         }
                         rp.skipAll();
