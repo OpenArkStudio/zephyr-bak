@@ -4,7 +4,7 @@ endif ()
 
 # client
 set(client_project "client")
-file(GLOB CLIENT_SRC src/client.cpp ${ROOT_DIR}/zephyr/*.hpp)
+file(GLOB_RECURSE CLIENT_SRC src/client.cpp ${ZEPHYR_ROOT_DIR}/zephyr/*.hpp)
 #list(FILTER ${CLIENT_SRC} EXCLUDE REGEX "*rpc*")
 add_executable(${client_project} ${CLIENT_SRC})
 if (UNIX)
@@ -16,7 +16,7 @@ endif ()
 
 # server
 set(server_project "server")
-file(GLOB SERVER_SRC src/server.cpp ${ROOT_DIR}/zephyr/*.hpp)
+file(GLOB_RECURSE SERVER_SRC src/server.cpp ${ZEPHYR_ROOT_DIR}/zephyr/*.hpp)
 #list(FILTER ${SERVER_SRC} EXCLUDE REGEX "*rpc*")
 add_executable(${server_project} ${SERVER_SRC})
 if (UNIX)
