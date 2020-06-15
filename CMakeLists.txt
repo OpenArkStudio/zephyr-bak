@@ -70,7 +70,7 @@ zephyr_extract_version()
 project(zephyr VERSION ${ZEPHYR_VERSION} LANGUAGES CXX C)
 message(STATUS "Build zephyr: v${ZEPHYR_VERSION}")
 
-set(ROOT_DIR ${PROJECT_SOURCE_DIR})
+set(ZEPHYR_ROOT_DIR ${PROJECT_SOURCE_DIR})
 
 if (WIN32)
     if (MSVC_VERSION LESS 1911)
@@ -92,7 +92,7 @@ endif ()
 if (ASIO_STANDALONE)
     # standalone asio
     add_definitions(-DASIO_STANDALONE)
-    include_directories(${ROOT_DIR}/asio/asio/include)
+    include_directories(${ZEPHYR_ROOT_DIR}/asio/asio/include)
 else ()
     # boost.asio
     find_package(Boost 1.72.0 REQUIRED)
@@ -118,14 +118,13 @@ if (ZEPHYR_ENABLE_RPC)
 endif ()
 
 # zephyr include files
-include_directories(${ROOT_DIR}/zephyr/include)
-
+include_directories(${ZEPHYR_ROOT_DIR}/zephyr/include)
 
 #---------------------------------------------------------------------------------------
 # log
 #---------------------------------------------------------------------------------------
 message(STATUS "Current system is [${CMAKE_SYSTEM}]")
-message(STATUS "ROOT_DIR=${ROOT_DIR}")
+message(STATUS "ZEPHYR_ROOT_DIR=${ZEPHYR_ROOT_DIR}")
 message(STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 message(STATUS "Start to build all ...")
 
