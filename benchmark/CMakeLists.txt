@@ -15,7 +15,9 @@ set(BENCHMARKS
         ping_pong_client
         ping_pong_server
         broadcast_client
-        broadcast_server)
+        broadcast_server
+        kcp_client
+        kcp_server)
 
 foreach (benchmark_index ${BENCHMARKS})
     BENCHMARK_FUNCTION(${benchmark_index})

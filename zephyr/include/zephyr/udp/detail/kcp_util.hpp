@@ -27,7 +27,7 @@
 #include <zephyr/base/error.hpp>
 #include <zephyr/base/detail/condition_wrap.hpp>
 
-#include <zephyr/udp/detail/ikcp.h>
+#include <zephyr/util/ikcp.h>
 
 namespace zephyr::detail::kcp
 {
