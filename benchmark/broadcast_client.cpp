@@ -29,6 +29,8 @@ std::atomic_llong total_recv_size = ATOMIC_VAR_INIT(0);
 
 int main(int argc, char* argv[])
 {
+    using namespace zephyr::detail;
+
     if (argc != 5)
     {
         fprintf(stderr, "Usage: <host> <port> <client num> <packet size>\n");
@@ -93,7 +95,7 @@ int main(int argc, char* argv[])
                 {
                     auto HEAD_LEN = sizeof(uint32_t) + sizeof(uint16_t);
 
-                    std::shared_ptr<zephyr::BigPacket> sp = std::make_shared<zephyr::BigPacket>(1);
+                    std::shared_ptr<BigPacket> sp = std::make_shared<BigPacket>(1);
                     sp->writeUINT32(HEAD_LEN + sizeof(int64_t) + packet_size);
                     sp->writeUINT16(1);
                     sp->writeINT64((int64_t)(&client));
@@ -119,14 +121,14 @@ int main(int argc, char* argv[])
                     auto HEAD_LEN = sizeof(uint32_t) + sizeof(uint16_t);
                     if (left_len >= HEAD_LEN)
                     {
-                        zephyr::BasePacketReader rp(parse_str, left_len);
+                        BasePacketReader rp(parse_str, left_len);
                         auto packet_len = rp.readUINT32();
                         if (left_len >= packet_len && packet_len >= HEAD_LEN)
                         {
                             total_recv_size += packet_len;
                             total_recv_packet_num++;
 
-                            zephyr::BasePacketReader rp(parse_str, packet_len);
+                            BasePacketReader rp(parse_str, packet_len);
                             rp.readUINT32();
                             rp.readUINT16();
                             int64_t addr = rp.readINT64();

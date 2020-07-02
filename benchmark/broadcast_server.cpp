@@ -60,6 +60,8 @@ static void broadcast_packet(std::string_view packet)
 
 int main(int argc, char* argv[])
 {
+    using namespace zephyr::detail;
+
     if (argc != 3)
     {
         fprintf(stderr, "Usage: <listen port> <net work thread num>\n");
@@ -119,7 +121,7 @@ int main(int argc, char* argv[])
                 auto HEAD_LEN = sizeof(uint32_t) + sizeof(uint16_t);
                 if (leftLen >= HEAD_LEN)
                 {
-                    zephyr::BasePacketReader rp(parse_str, leftLen);
+                    BasePacketReader rp(parse_str, leftLen);
                     auto packet_len = rp.readUINT32();
                     if (leftLen >= packet_len && packet_len >= HEAD_LEN)
                     {

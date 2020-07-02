@@ -57,6 +57,7 @@ option(ZEPHYR_ENABLE_RPC "Enable rpc" OFF)
 option(ZEPHYR_BUILD_TESTS "Enable build tests" ON)
 option(ZEPHYR_BUILD_EXAMPLES "Enable build examples" ON)
 option(ZEPHYR_BUILD_BENCHMARK "Enable build benchmarks" ON)
+option(ZEPHYR_USE_XD_KCP "Enable X.D. KCP" OFF)
 
 #---------------------------------------------------------------------------------------
 # Get version number.
@@ -87,6 +88,11 @@ else (UNIX)
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -DNDEBUG -fPIC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
     add_definitions(-Wno-unused-parameter -Wno-unused-variable -Wno-unused-function)
+endif ()
+
+
+if (ZEPHYR_USE_XD_KCP)
+    add_definitions(-DXD_KCP) # XD KCP
 endif ()
 
 if (ASIO_STANDALONE)

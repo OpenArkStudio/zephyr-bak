@@ -9,12 +9,12 @@
 
 #include <zephyr/util/endian.hpp>
 
-namespace zephyr {
+namespace zephyr::detail {
 
 class BasePacketWriter
 {
 public:
-    BasePacketWriter(char* buffer, size_t len, bool useBigEndian = true, bool isAutoMalloc = false)
+    BasePacketWriter(char* buffer, size_t len, bool useBigEndian = false, bool isAutoMalloc = false)
         : mIsAutoMalloc(isAutoMalloc)
         , mBigEndian(useBigEndian)
     {
@@ -240,7 +240,7 @@ protected:
 class BasePacketReader
 {
 public:
-    BasePacketReader(const char* buffer, size_t len, bool useBigEndian = true)
+    BasePacketReader(const char* buffer, size_t len, bool useBigEndian = false)
         : mBigEndian(useBigEndian)
         , mMaxLen(len)
     {
@@ -351,7 +351,7 @@ private:
     template<typename T>
     void read(T& value)
     {
-        static_assert(std::is_same<T, typename std::remove_pointer<T>::type>::value, "T must a nomal type");
+        static_assert(std::is_same<T, typename std::remove_pointer<T>::type>::value, "T must a normal type");
         static_assert(std::is_pod<T>::value, "T must a pod type");
 
         if ((mPos + sizeof(value)) > mMaxLen)
@@ -385,4 +385,4 @@ private:
 
 using BigPacket = AutoMallocPacket<32 * 1024>;
 
-} // namespace zephyr
+} // namespace zephyr::detail
