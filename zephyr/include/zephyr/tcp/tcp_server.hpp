@@ -374,7 +374,7 @@ namespace zephyr::detail
 			// asio don't allow operate the same socket in multi thread,if you close socket in one thread and another thread is 
 			// calling socket's async_... function,it will crash.so we must care for operate the socket.when need close the
 			// socket ,we use the strand to post a event,make sure the socket's close operation is in the same thread.
-			asio::post(this->io_.strand(), [this, ec, this_ptr = std::move(self_ptr)]()
+			asio::post(this->io_.strand(), [this, ec, this_ptr = std::move(self_ptr), old_state]()
 			{
 				set_last_error(ec);
 
@@ -383,7 +383,7 @@ namespace zephyr::detail
 				this->counter_timer_.async_wait(asio::bind_executor(this->io_.strand(), [](const error_code&) {}));
 
 				// stop all the sessions, the session::stop must be no blocking,otherwise it may be cause loop lock.
-				this->sessions_.foreach([](std::shared_ptr<session_t> & session_ptr)
+				this->sessions_.foreach([this](std::shared_ptr<session_t> & session_ptr)
 				{
 					session_ptr->stop();
 				});

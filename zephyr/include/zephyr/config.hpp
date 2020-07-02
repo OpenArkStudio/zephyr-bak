@@ -22,8 +22,9 @@
 
 // If you want to use the ssl, you need to define ZEPHYR_USE_SSL.
 // When use ssl,on windows need linker "libssl.lib;libcrypto.lib;Crypt32.lib;", on 
-// linux need linker "ssl;crypto;"
-//#define ZEPHYR_USE_SSL
+// linux need linker "ssl;crypto;", if link failed under gcc, try ":libssl.a;:libcrypto.a;"
+// ssl must be before crypto.
+//#define ASIO2_USE_SSL
 
 
 // the tests trigger deprecation warnings when compiled with msvc in C++17 mode

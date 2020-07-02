@@ -106,6 +106,14 @@ namespace zephyr::detail
 		}
 
 	protected:
+		template<typename MatchCondition>
+		inline void _do_init(std::shared_ptr<derived_t> this_ptr, condition_wrap<MatchCondition> condition)
+		{
+			super::_do_init(std::move(this_ptr), condition);
+
+			this->derived()._ws_init(condition, this->ssl_stream());
+		}
+
 		inline void _handle_disconnect(const error_code& ec, std::shared_ptr<derived_t> this_ptr)
 		{
 			this->derived()._ws_stop(this_ptr, [this, ec, this_ptr]()

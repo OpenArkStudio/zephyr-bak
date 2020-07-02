@@ -51,13 +51,19 @@ namespace zephyr::detail
 
 	protected:
 		template<typename MatchCondition, typename Socket>
+		inline void _ws_init(const condition_wrap<MatchCondition>& condition, Socket& socket)
+		{
+			detail::ignore::unused(condition, socket);
+
+			this->ws_stream_ = std::make_unique<stream_t>(socket);
+		}
+
+		template<typename MatchCondition, typename Socket>
 		inline void _ws_start(
 			const std::shared_ptr<derived_t>& this_ptr,
 			const condition_wrap<MatchCondition>& condition, Socket& socket)
 		{
-			detail::ignore::unused(this_ptr, condition);
-
-			this->ws_stream_ = std::make_unique<stream_t>(socket);
+			detail::ignore::unused(this_ptr, condition, socket);
 		}
 
 		template<typename Fn>
@@ -202,8 +208,6 @@ namespace zephyr::detail
 		inline void _handle_upgrade(const error_code & ec, std::shared_ptr<derived_t> self_ptr, condition_wrap<MatchCondition> condition)
 		{
 			ZEPHYR_ASSERT(bool(this->ws_stream_));
-
-			this->ws_stream_->binary(true); // Setting the message type to binary.
 
 			if constexpr (isSession)
 			{
