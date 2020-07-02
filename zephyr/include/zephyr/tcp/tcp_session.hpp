@@ -130,7 +130,7 @@ namespace zephyr::detail
 		/**
 		 * @function : get this object hash key,used for session map
 		 */
-		inline key_type hash_key() const
+		inline const key_type hash_key() const
 		{
 			return reinterpret_cast<key_type>(this);
 		}
@@ -145,9 +145,12 @@ namespace zephyr::detail
 			this->reset_connect_time();
 			this->reset_active_time();
 
-            this->dgram_ = (std::is_same_v<MatchCondition, use_dgram_t> != 0);
+			if constexpr (std::is_same_v<MatchCondition, use_dgram_t>)
+				this->dgram_ = true;
+			else
+				this->dgram_ = false;
 
-			// set keepalive options
+			// set keeplive options
 			this->keep_alive_options();
 		}
 
@@ -296,7 +299,7 @@ namespace zephyr::detail
 		template<typename MatchCondition>
 		inline void _start_recv(std::shared_ptr<derived_t> this_ptr, condition_wrap<MatchCondition> condition)
 		{
-			// to avoid the user call stop in another thread,then it may be socket_.async_read_some
+			// to avlid the user call stop in another thread,then it may be socket_.async_read_some
 			// and socket_.close be called at the same time
 			asio::post(this->io_.strand(), make_allocator(this->rallocator_,
 				[this, self_ptr = std::move(this_ptr), condition]()
@@ -352,11 +355,11 @@ namespace zephyr::detail
 
 	protected:
 		/**
-		 * @function : get the recv/read allocator object reference
+		 * @function : get the recv/read allocator object refrence
 		 */
 		inline auto & rallocator() { return this->rallocator_; }
 		/**
-		 * @function : get the send/write allocator object reference
+		 * @function : get the send/write allocator object refrence
 		 */
 		inline auto & wallocator() { return this->wallocator_; }
 

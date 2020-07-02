@@ -85,7 +85,7 @@ public:
     /**
 		 * @destructor
 		 */
-    ~udp_session_impl_t() {}
+    ~udp_session_impl_t() = default;
 
 protected:
     /**

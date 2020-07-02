@@ -114,7 +114,7 @@ namespace zephyr::detail
 			return (*(this->ws_stream_));
 		}
 
-		inline http::response<body_t>& upgrade_response() { return this->upgrade_rep_; }
+		inline const http::response<body_t>& upgrade_response() { return this->upgrade_rep_; }
 
 	public:
 		/**
@@ -130,6 +130,14 @@ namespace zephyr::detail
 		}
 
 	protected:
+		template<typename MatchCondition>
+		inline void _do_init(condition_wrap<MatchCondition> condition)
+		{
+			super::_do_init(condition);
+
+			this->derived()._ws_init(condition, this->socket_);
+		}
+
 		inline void _handle_disconnect(const error_code& ec, std::shared_ptr<derived_t> this_ptr)
 		{
 			this->derived()._ws_stop(this_ptr, [this, ec, this_ptr]()

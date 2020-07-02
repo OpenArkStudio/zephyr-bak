@@ -24,11 +24,13 @@
     time a set of code changes is merged to the develop branch.
 */
 
+// asio2 2.5
+
 // ZEPHYR_VERSION / 100 is the major version
 // ZEPHYR_VERSION % 100 is the minor version
 #define ZEPHYR_VER_MAJOR 1
 #define ZEPHYR_VER_MINOR 0
-#define ZEPHYR_VER_PATCH 0
+#define ZEPHYR_VER_PATCH 1
 
 #define ZEPHYR_VERSION (ZEPHYR_VER_MAJOR * 10000 + ZEPHYR_VER_MINOR * 100 + ZEPHYR_VER_PATCH)
 

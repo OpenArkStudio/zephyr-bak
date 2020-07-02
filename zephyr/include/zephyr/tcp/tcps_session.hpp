@@ -19,6 +19,7 @@
 
 #include <zephyr/tcp/tcp_session.hpp>
 #include <zephyr/tcp/component/ssl_stream_cp.hpp>
+#include <asio2/tcp/component/ssl_context_cp.hpp>
 
 namespace zephyr::detail
 {
@@ -67,7 +68,7 @@ namespace zephyr::detail
 			std::size_t max_buffer_size
 		)
 			: super(sessions, listener, rwio, init_buffer_size, max_buffer_size)
-			, ssl_stream_comp(this->io_, asio::ssl::stream_base::server)
+			, ssl_stream_comp(this->io_, ctx, asio::ssl::stream_base::server)
 			, ctx_(ctx)
 		{
 		}
@@ -98,6 +99,14 @@ namespace zephyr::detail
 		}
 
 	protected:
+		template<typename MatchCondition>
+		inline void _do_init(std::shared_ptr<derived_t> this_ptr, condition_wrap<MatchCondition> condition)
+		{
+			super::_do_init(std::move(this_ptr), condition);
+
+			this->derived()._ssl_init(condition, this->socket_, this->ctx_);
+		}
+
 		inline void _handle_disconnect(const error_code& ec, std::shared_ptr<derived_t> this_ptr)
 		{
 			this->derived()._ssl_stop(this_ptr, [this, ec, this_ptr]()
