@@ -124,7 +124,7 @@ if (ZEPHYR_ENABLE_RPC)
 endif ()
 
 # zephyr include files
-include_directories(${ZEPHYR_ROOT_DIR}/zephyr/include)
+include_directories(${ZEPHYR_ROOT_DIR}/include)
 
 #---------------------------------------------------------------------------------------
 # log
