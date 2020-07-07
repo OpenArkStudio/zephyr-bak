@@ -110,10 +110,6 @@ namespace zephyr::detail
 							derive._handle_recv(ec, bytes_recvd, std::move(self_ptr), condition);
 						})));
 					}
-					else
-					{
-						std::ignore;
-					}
 				}
 				catch (system_error & e)
 				{

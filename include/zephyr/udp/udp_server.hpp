@@ -375,12 +375,13 @@ protected:
 
         // psot a recv signal to ensure that all recv events has finished already.
         asio::post(this->io_.strand(), [this, ec, this_ptr = std::move(self_ptr), old_state]() {
+            std::ignore = old_state;
             // When the code runs here,no new session can be emplace or erase to session_mgr.
             // stop all the sessions, the session::stop must be no blocking,otherwise it may be cause loop lock.
             set_last_error(ec);
 
             // stop all the sessions, the session::stop must be no blocking,otherwise it may be cause loop lock.
-            this->sessions_.foreach ([this](std::shared_ptr<session_t>& session_ptr) { session_ptr->stop(); });
+            this->sessions_.foreach ([](std::shared_ptr<session_t>& session_ptr) { session_ptr->stop(); });
 
             this->counter_ptr_.reset();
         });

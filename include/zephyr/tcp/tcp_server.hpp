@@ -376,6 +376,7 @@ namespace zephyr::detail
 			// socket ,we use the strand to post a event,make sure the socket's close operation is in the same thread.
 			asio::post(this->io_.strand(), [this, ec, this_ptr = std::move(self_ptr), old_state]()
 			{
+                std::ignore = old_state;
 				set_last_error(ec);
 
 				// start timer to hold the acceptor io_context
@@ -383,7 +384,7 @@ namespace zephyr::detail
 				this->counter_timer_.async_wait(asio::bind_executor(this->io_.strand(), [](const error_code&) {}));
 
 				// stop all the sessions, the session::stop must be no blocking,otherwise it may be cause loop lock.
-				this->sessions_.foreach([this](std::shared_ptr<session_t> & session_ptr)
+				this->sessions_.foreach([](std::shared_ptr<session_t> & session_ptr)
 				{
 					session_ptr->stop();
 				});
