@@ -220,7 +220,7 @@ enum class http_status
   /* icecast */                     \
   XX(33, SOURCE,      SOURCE)       \
 
-enum class http_method
+enum http_method
   {
 #define XX(num, name, string) HTTP_##name = num,
   HTTP_METHOD_MAP(XX)
@@ -228,7 +228,7 @@ enum class http_method
   };
 
 
-enum class http_parser_type { HTTP_REQUEST, HTTP_RESPONSE, HTTP_BOTH };
+enum http_parser_type { HTTP_REQUEST, HTTP_RESPONSE, HTTP_BOTH };
 
 
 /* Flag values for http_parser.flags field */
@@ -296,7 +296,7 @@ enum class flags
 
 /* Define HPE_* values for each errno value above */
 #define HTTP_ERRNO_GEN(n, s) HPE_##n,
-enum class http_errno {
+enum http_errno {
   HTTP_ERRNO_MAP(HTTP_ERRNO_GEN)
 };
 #undef HTTP_ERRNO_GEN
@@ -722,7 +722,7 @@ static const uint8_t normal_url_char[32] = {
 
 #undef T
 
-enum class state
+enum state
   { s_dead = 1 /* important that this is > 0 */
 
   , s_start_req_or_res
@@ -806,7 +806,7 @@ enum class state
 #define PARSING_HEADER(_state) (_state <= state::s_headers_done)
 
 
-enum class header_states
+enum header_states
   { h_general = 0
   , h_C
   , h_CO
