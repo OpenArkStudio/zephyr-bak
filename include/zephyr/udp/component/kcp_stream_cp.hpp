@@ -495,8 +495,17 @@ protected:
 
         derived_t& derive = zhis->derive;
 
+        std::uint32_t kcphdr_id = 0;
+        if constexpr (isSession)
+        {
+            kcphdr_id = zhis->remote_id_;
+        }
+        else
+        {
+            kcphdr_id = zhis->seq_;
+        }
         // add custom header before normal data
-        xd_kcp::xd_kcphdr_msg hdr = xd_kcp::xd_make_kcphdr_msg(zhis->seq_);
+        xd_kcp::xd_kcphdr_msg hdr = xd_kcp::xd_make_kcphdr_msg(kcphdr_id);
         static BigPacket packet;
         packet.init();
         packet.writeUINT8(hdr.protocal_type);
