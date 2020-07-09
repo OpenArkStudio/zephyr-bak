@@ -47,9 +47,9 @@ namespace zephyr::detail
 	static long constexpr  udp_connect_timeout = 5 * 1000;
 	static long constexpr http_connect_timeout = 5 * 1000;
 
-	static long constexpr  tcp_silence_timeout = 60 * 60 * 1000;
-	static long constexpr  udp_silence_timeout = 60 * 1000;
-	static long constexpr http_silence_timeout = 85 * 1000;
+	static long constexpr  tcp_silence_timeout = 30 * 1000;
+	static long constexpr  udp_silence_timeout = 30 * 1000;
+	static long constexpr http_silence_timeout = 30 * 1000;
 
 	static long constexpr http_execute_timeout = 3 * 1000;
 
