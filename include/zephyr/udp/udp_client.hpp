@@ -472,7 +472,7 @@ protected:
                 {
                     ZEPHYR_ASSERT(false);
                 }
-                else if (xd_kcp::is_xd_kcphdr_msg(s, this->kcp_->remote_id_))
+                else if (xd_kcp::is_xd_kcphdr_msg(s, this->kcp_->seq_))
                 {
                     s.remove_prefix(std::min(sizeof(xd_kcp::xd_kcphdr_msg), s.size()));
                     this->kcp_->_kcp_recv(this_ptr, s, this->buffer_);
