@@ -30,6 +30,7 @@ int main(int argc, char* argv[])
     {
         auto& client = clients[i];
         client.connect_timeout(std::chrono::seconds(3));
+        client.auto_reconnect(true, std::chrono::seconds(10));
         client.local_endpoint(asio::ip::address_v4::from_string(host.data()), port + i + 1);
         client
             .bind_connect([&](asio::error_code ec) {
@@ -39,7 +40,6 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    //printf("connect success : %s %u\n", client.local_address().c_str(), client.local_port());
                     for (size_t i = 0; i < pipeline; i++)
                     {
                         client.send(packet);
@@ -49,16 +49,7 @@ int main(int argc, char* argv[])
             .bind_disconnect([](asio::error_code ec) {
                 printf("disconnect : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
             })
-            .bind_recv([&](std::string_view sv) {
-                const char* parse_str = sv.data();
-                auto leftLen = sv.length();
-                while (leftLen >= packet_size)
-                {
-                    client.send(std::string_view(sv.data(), packet_size));
-                    leftLen -= packet_size;
-                    parse_str += packet_size;
-                }
-            })
+            .bind_recv([&](std::string_view sv) { client.send(packet); })
             .bind_handshake([&](asio::error_code ec) {
                 if (zephyr::get_last_error())
                 {
@@ -66,8 +57,7 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    //printf("handshake success : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
-                    client.send(packet);
+                    printf("handshake success: %s %d\n", client.local_address().c_str(), client.local_port());
                 }
             });
 

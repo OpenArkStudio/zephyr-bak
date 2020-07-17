@@ -72,7 +72,7 @@ namespace zephyr::detail
 
 				socket.open(derive.local_endpoint().protocol());
 
-				// Connect succeeded. set the keeplive values
+				// Connect succeeded. set the keep-alive values
 				socket.set_option(typename socket_t::reuse_address(true)); // set port reuse
 
 				if constexpr (std::is_same_v<typename socket_t::protocol_type, asio::ip::tcp>)
@@ -166,7 +166,7 @@ namespace zephyr::detail
 			}
 		}
 
-		template<bool isAsync, typename MatchCondition>
+        template<bool isAsync, typename MatchCondition>
 		inline void _handle_connect(const error_code & ec, std::shared_ptr<derived_t> this_ptr, condition_wrap<MatchCondition> condition)
 		{
 			set_last_error(ec);

@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
     std::size_t packet_size = atoi(argv[2]);
 
     ////////////////////////////////////////////////////////////
-
+    std::string packet = std::string(packet_size, 'a');
     zephyr::udp_server server;
     server.start_timer(1, std::chrono::seconds(1), []() {
         if (total_recv_size / 1024 == 0)
@@ -48,24 +48,20 @@ int main(int argc, char* argv[])
     });
     server
         .bind_recv([&](std::shared_ptr<zephyr::udp_session>& session_ptr, std::string_view sv) {
-            const char* parse_str = sv.data();
-            auto leftLen = sv.length();
-            while (leftLen >= packet_size)
-            {
-                session_ptr->send(std::string_view(sv.data(), packet_size));
-                leftLen -= packet_size;
-                parse_str += packet_size;
-                total_packet_num++;
-
-                total_recv_size += packet_size;
-            }
+            total_recv_size += sv.length();
+            session_ptr->send(packet);
+            total_packet_num++;
         })
         .bind_connect([](auto& session_ptr) { total_client_num++; })
         .bind_disconnect([](auto& session_ptr) { total_client_num--; })
-        .bind_handshake([](auto& session_ptr, asio::error_code ec) {
+        .bind_handshake([&](auto& session_ptr, asio::error_code ec) {
             if (ec)
             {
-                printf("client handshake : %d %s\n", zephyr::last_error_val(), zephyr::last_error_msg().c_str());
+                printf("client handshake failed: %d %s\n", ec.value(), ec.message().c_str());
+            }
+            else
+            {
+                printf("handshake success: %s %d\n", session_ptr->remote_address().c_str(), session_ptr->remote_port());
             }
         })
         .bind_start([&server](asio::error_code ec) {
