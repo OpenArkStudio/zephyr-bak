@@ -202,15 +202,17 @@ protected:
         {
             // step 3 : server received syn from client (the first_ is syn)
             // Check whether the first_ packet is SYN handshake
-            if (!xd_kcp::is_xd_kcphdr_syn(this->first_))
+            if (xd_kcp::is_xd_kcphdr_syn(this->first_))
             {
-                set_last_error(asio::error::no_protocol_option);
-                this->derived()._fire_handshake(this_ptr, asio::error::no_protocol_option);
-                this->derived()._do_disconnect(asio::error::no_protocol_option);
-                return;
+                this->kcp_ = std::make_unique<kcp_stream_cp<derived_t, true>>(this->derived(), this->io_);
+                this->kcp_->_post_handshake(std::move(this_ptr), std::move(condition));
             }
-            this->kcp_ = std::make_unique<kcp_stream_cp<derived_t, true>>(this->derived(), this->io_);
-            this->kcp_->_post_handshake(std::move(this_ptr), std::move(condition));
+            else
+            {
+                //set_last_error(asio::error::no_protocol_option);
+                //this->derived()._fire_handshake(this_ptr, asio::error::no_protocol_option);
+                this->derived()._do_disconnect(asio::error::no_protocol_option);
+            }
         }
         else
         {
@@ -229,15 +231,17 @@ protected:
         {
             // step 3 : server received syn from client (the first_ is syn)
             // Check whether the first_ packet is SYN handshake
-            if (!kcp::is_kcphdr_syn(this->first_))
+            if (kcp::is_kcphdr_syn(this->first_))
             {
-                set_last_error(asio::error::no_protocol_option);
-                this->derived()._fire_handshake(this_ptr, asio::error::no_protocol_option);
-                this->derived()._do_disconnect(asio::error::no_protocol_option);
-                return;
+                this->kcp_ = std::make_unique<kcp_stream_cp<derived_t, true>>(this->derived(), this->io_);
+                this->kcp_->_post_handshake(std::move(this_ptr), std::move(condition));
             }
-            this->kcp_ = std::make_unique<kcp_stream_cp<derived_t, true>>(this->derived(), this->io_);
-            this->kcp_->_post_handshake(std::move(this_ptr), std::move(condition));
+            else
+            {
+                //set_last_error(asio::error::no_protocol_option);
+                //this->derived()._fire_handshake(this_ptr, asio::error::no_protocol_option);
+                this->derived()._do_disconnect(asio::error::no_protocol_option);
+            }
         }
         else
         {

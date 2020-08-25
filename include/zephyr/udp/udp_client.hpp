@@ -468,10 +468,10 @@ protected:
                     this->kcp_->send_fin_ = false;
                     this->derived()._do_disconnect(asio::error::eof);
                 }
-                else if (xd_kcp::is_xd_kcphdr_synack(s, this->kcp_->seq_))
+                /*else if (xd_kcp::is_xd_kcphdr_synack(s, this->kcp_->seq_))
                 {
                     ZEPHYR_ASSERT(false);
-                }
+                }*/
                 else if (xd_kcp::is_xd_kcphdr_msg(s, this->kcp_->seq_))
                 {
                     s.remove_prefix(std::min(sizeof(xd_kcp::xd_kcphdr_msg), s.size()));
@@ -524,10 +524,10 @@ protected:
                         this->kcp_->send_fin_ = false;
                         this->derived()._do_disconnect(asio::error::eof);
                     }
-                    else if (kcp::is_kcphdr_synack(s, this->kcp_->seq_))
+/*                    else if (kcp::is_kcphdr_synack(s, this->kcp_->seq_))
                     {
                         ZEPHYR_ASSERT(false);
-                    }
+                    }*/
                 }
                 else
                 {

@@ -458,7 +458,7 @@ protected:
                 if constexpr (std::is_same_v<MatchCondition, use_kcp_t>)
                 {
                     // TODO: check
-                    if (xd_kcp::is_xd_kcphdr_syn(s))
+/*                    if (xd_kcp::is_xd_kcphdr_syn(s))
                     {
                         if (session_ptr->kcp_)
                         {
@@ -482,7 +482,7 @@ protected:
                         asio::post(this->io_.strand(), make_allocator(this->wallocator_, std::move(task)));
 #endif
                     }
-                    else
+                    else*/
                     {
                         session_ptr->_handle_recv(ec, s, session_ptr, condition);
                     }
@@ -533,7 +533,7 @@ protected:
             {
                 if constexpr (std::is_same_v<MatchCondition, use_kcp_t>)
                 {
-                    if (s.size() == sizeof(kcp::kcphdr))
+/*                    if (s.size() == sizeof(kcp::kcphdr))
                     {
                         if (kcp::is_kcphdr_syn(s))
                         {
@@ -565,7 +565,7 @@ protected:
                             std::ignore = true;
                         }
                     }
-                    else
+                    else*/
                     {
                         session_ptr->_handle_recv(ec, s, session_ptr, condition);
                     }

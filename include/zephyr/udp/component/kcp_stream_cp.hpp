@@ -506,7 +506,7 @@ protected:
         }
         // add custom header before normal data
         xd_kcp::xd_kcphdr_msg hdr = xd_kcp::xd_make_kcphdr_msg(kcphdr_id);
-        static BigPacket packet;
+        static thread_local BigPacket packet;
         packet.init();
         packet.writeUINT8(hdr.protocal_type);
         packet.writeUINT32(hdr.local_id);
