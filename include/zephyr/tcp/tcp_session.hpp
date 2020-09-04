@@ -299,7 +299,7 @@ namespace zephyr::detail
 		template<typename MatchCondition>
 		inline void _start_recv(std::shared_ptr<derived_t> this_ptr, condition_wrap<MatchCondition> condition)
 		{
-			// to avlid the user call stop in another thread,then it may be socket_.async_read_some
+			// to avoid the user call stop in another thread,then it may be socket_.async_read_some
 			// and socket_.close be called at the same time
 			asio::post(this->io_.strand(), make_allocator(this->rallocator_,
 				[this, self_ptr = std::move(this_ptr), condition]()

@@ -58,6 +58,8 @@ int main(int argc, char* argv[])
             if (ec)
             {
                 printf("client handshake failed: %d %s\n", ec.value(), ec.message().c_str());
+                std::cout << "shake failed, " << session_ptr->remote_address() << ":" << session_ptr->remote_port()
+                          << std::endl;
             }
             else
             {

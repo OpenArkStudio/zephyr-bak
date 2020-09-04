@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
         auto& client = clients[i];
         client.connect_timeout(std::chrono::seconds(3));
         client.auto_reconnect(true, std::chrono::seconds(10));
-        client.local_endpoint(asio::ip::address_v4::from_string(host.data()), port + i + 1);
+        client.local_endpoint(asio::ip::address_v4::from_string(host.data()), 0);
         client
             .bind_connect([&](asio::error_code ec) {
                 if (zephyr::get_last_error())
