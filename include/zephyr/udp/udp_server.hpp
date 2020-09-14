@@ -423,7 +423,7 @@ protected:
         }
     }
 
-#ifdef XD_KCP
+//#ifdef XD_KCP
 
     template<typename MatchCondition>
     inline void _handle_recv(const error_code& ec, std::size_t bytes_recvd, condition_wrap<MatchCondition> condition)
@@ -458,7 +458,8 @@ protected:
                 if constexpr (std::is_same_v<MatchCondition, use_kcp_t>)
                 {
                     // TODO: check
-/*                    if (xd_kcp::is_xd_kcphdr_syn(s))
+                    /*
+                    if (kcp::is_kcphdr_syn(s))
                     {
                         if (session_ptr->kcp_)
                         {
@@ -499,90 +500,90 @@ protected:
         this->derived()._post_recv(condition);
     }
 
-#else
-
-    template<typename MatchCondition>
-    inline void _handle_recv(const error_code& ec, std::size_t bytes_recvd, condition_wrap<MatchCondition> condition)
-    {
-        set_last_error(ec);
-
-        if (ec == asio::error::operation_aborted)
-        {
-            this->derived()._do_stop(ec);
-            return;
-        }
-
-        if (!this->is_started())
-            return;
-
-        this->buffer_.commit(bytes_recvd);
-
-        if (!ec)
-        {
-            std::string_view s = std::string_view(
-                static_cast<std::string_view::const_pointer>(this->buffer_.data().data()), bytes_recvd);
-
-            // first we find whether the session is in the session_mgr pool already,if not ,
-            // we create a new session and put it into the session_mgr pool
-            std::shared_ptr<session_t> session_ptr = this->sessions_.find(this->remote_endpoint_);
-            if (!session_ptr)
-            {
-                this->derived()._handle_accept(ec, s, session_ptr, condition);
-            }
-            else
-            {
-                if constexpr (std::is_same_v<MatchCondition, use_kcp_t>)
-                {
-/*                    if (s.size() == sizeof(kcp::kcphdr))
-                    {
-                        if (kcp::is_kcphdr_syn(s))
-                        {
-                            if (session_ptr->kcp_)
-                            {
-                                session_ptr->kcp_->send_fin_ = false;
-                            }
-                            session_ptr->stop();
-
-                            auto task = [this, ec, condition, session_ptr,
-                                            syn = std::string{s.data(), s.size()}]() mutable {
-                                this->derived()._handle_accept(ec, std::string_view{syn}, session_ptr, condition);
-                            };
-#if defined(ASIO2_SEND_CORE_ASYNC)
-                            session_ptr->push_event([this, &session_ptr, t = std::move(task)]() mutable {
-                                auto task = [this, &session_ptr, t = std::move(t)]() mutable {
-                                    t();
-                                    session_ptr->next_event();
-                                };
-                                asio::post(this->io_.strand(), make_allocator(this->wallocator_, std::move(task)));
-                                return true;
-                            });
-#else
-                            asio::post(this->io_.strand(), make_allocator(this->wallocator_, std::move(task)));
-#endif
-                        }
-                        else
-                        {
-                            std::ignore = true;
-                        }
-                    }
-                    else*/
-                    {
-                        session_ptr->_handle_recv(ec, s, session_ptr, condition);
-                    }
-                }
-                else
-                {
-                    session_ptr->_handle_recv(ec, s, session_ptr, condition);
-                }
-            }
-        }
-
-        this->buffer_.consume(this->buffer_.size());
-
-        this->derived()._post_recv(condition);
-    }
-
-#endif // XD_KCP
+//#else
+//
+//    template<typename MatchCondition>
+//    inline void _handle_recv(const error_code& ec, std::size_t bytes_recvd, condition_wrap<MatchCondition> condition)
+//    {
+//        set_last_error(ec);
+//
+//        if (ec == asio::error::operation_aborted)
+//        {
+//            this->derived()._do_stop(ec);
+//            return;
+//        }
+//
+//        if (!this->is_started())
+//            return;
+//
+//        this->buffer_.commit(bytes_recvd);
+//
+//        if (!ec)
+//        {
+//            std::string_view s = std::string_view(
+//                static_cast<std::string_view::const_pointer>(this->buffer_.data().data()), bytes_recvd);
+//
+//            // first we find whether the session is in the session_mgr pool already,if not ,
+//            // we create a new session and put it into the session_mgr pool
+//            std::shared_ptr<session_t> session_ptr = this->sessions_.find(this->remote_endpoint_);
+//            if (!session_ptr)
+//            {
+//                this->derived()._handle_accept(ec, s, session_ptr, condition);
+//            }
+//            else
+//            {
+//                if constexpr (std::is_same_v<MatchCondition, use_kcp_t>)
+//                {
+///*                    if (s.size() == sizeof(kcp::kcphdr))
+//                    {
+//                        if (kcp::is_kcphdr_syn(s))
+//                        {
+//                            if (session_ptr->kcp_)
+//                            {
+//                                session_ptr->kcp_->send_fin_ = false;
+//                            }
+//                            session_ptr->stop();
+//
+//                            auto task = [this, ec, condition, session_ptr,
+//                                            syn = std::string{s.data(), s.size()}]() mutable {
+//                                this->derived()._handle_accept(ec, std::string_view{syn}, session_ptr, condition);
+//                            };
+//#if defined(ASIO2_SEND_CORE_ASYNC)
+//                            session_ptr->push_event([this, &session_ptr, t = std::move(task)]() mutable {
+//                                auto task = [this, &session_ptr, t = std::move(t)]() mutable {
+//                                    t();
+//                                    session_ptr->next_event();
+//                                };
+//                                asio::post(this->io_.strand(), make_allocator(this->wallocator_, std::move(task)));
+//                                return true;
+//                            });
+//#else
+//                            asio::post(this->io_.strand(), make_allocator(this->wallocator_, std::move(task)));
+//#endif
+//                        }
+//                        else
+//                        {
+//                            std::ignore = true;
+//                        }
+//                    }
+//                    else*/
+//                    {
+//                        session_ptr->_handle_recv(ec, s, session_ptr, condition);
+//                    }
+//                }
+//                else
+//                {
+//                    session_ptr->_handle_recv(ec, s, session_ptr, condition);
+//                }
+//            }
+//        }
+//
+//        this->buffer_.consume(this->buffer_.size());
+//
+//        this->derived()._post_recv(condition);
+//    }
+//
+//#endif // XD_KCP
 
     template<typename... Args>
     inline std::shared_ptr<session_t> _make_session(Args&&... args)

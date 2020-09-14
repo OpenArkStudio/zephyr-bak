@@ -430,7 +430,7 @@ protected:
         }
     }
 
-#ifdef XD_KCP
+//#ifdef XD_KCP
 
     template<typename MatchCondition>
     void _handle_recv(const error_code& ec, std::size_t bytes_recvd, std::shared_ptr<derived_t> this_ptr,
@@ -462,74 +462,16 @@ protected:
             }
             else
             {
-                // TODO: check
-                if (xd_kcp::is_xd_kcphdr_fin(s, this->kcp_->seq_))
+                if (kcp::is_kcphdr_fin(s, this->kcp_->sync_id_, this->kcp_->conv_id_))
                 {
                     this->kcp_->send_fin_ = false;
                     this->derived()._do_disconnect(asio::error::eof);
                 }
-                /*else if (xd_kcp::is_xd_kcphdr_synack(s, this->kcp_->seq_))
+                /*else if (kcp::is_kcphdr_syn(s, this->kcp_->seq_))
                 {
                     ZEPHYR_ASSERT(false);
                 }*/
-                else if (xd_kcp::is_xd_kcphdr_msg(s, this->kcp_->seq_))
-                {
-                    s.remove_prefix(std::min(sizeof(xd_kcp::xd_kcphdr_msg), s.size()));
-                    this->kcp_->_kcp_recv(this_ptr, s, this->buffer_);
-                }
-            }
-        }
-
-        this->buffer_.consume(this->buffer_.size());
-
-        this->derived()._post_recv(std::move(this_ptr), condition);
-    }
-
-#else
-
-    template<typename MatchCondition>
-    void _handle_recv(const error_code& ec, std::size_t bytes_recvd, std::shared_ptr<derived_t> this_ptr,
-        condition_wrap<MatchCondition> condition)
-    {
-        set_last_error(ec);
-
-        if (ec == asio::error::operation_aborted || ec == asio::error::connection_refused)
-        {
-            this->derived()._do_disconnect(ec);
-            return;
-        }
-
-        if (!this->is_started())
-            return;
-
-        this->buffer_.commit(bytes_recvd);
-
-        if (!ec)
-        {
-            this->reset_active_time();
-
-            std::string_view s = std::string_view(
-                static_cast<std::string_view::const_pointer>(this->buffer_.data().data()), bytes_recvd);
-
-            if constexpr (!std::is_same_v<MatchCondition, use_kcp_t>)
-            {
-                this->derived()._fire_recv(this_ptr, std::move(s));
-            }
-            else
-            {
-                if (s.size() == sizeof(kcp::kcphdr))
-                {
-                    if (kcp::is_kcphdr_fin(s))
-                    {
-                        this->kcp_->send_fin_ = false;
-                        this->derived()._do_disconnect(asio::error::eof);
-                    }
-/*                    else if (kcp::is_kcphdr_synack(s, this->kcp_->seq_))
-                    {
-                        ZEPHYR_ASSERT(false);
-                    }*/
-                }
-                else
+                else if (kcp::is_kcphdr_msg(s))
                 {
                     this->kcp_->_kcp_recv(this_ptr, s, this->buffer_);
                 }
@@ -541,7 +483,63 @@ protected:
         this->derived()._post_recv(std::move(this_ptr), condition);
     }
 
-#endif // XD_KCP
+//#else
+//
+//    template<typename MatchCondition>
+//    void _handle_recv(const error_code& ec, std::size_t bytes_recvd, std::shared_ptr<derived_t> this_ptr,
+//        condition_wrap<MatchCondition> condition)
+//    {
+//        set_last_error(ec);
+//
+//        if (ec == asio::error::operation_aborted || ec == asio::error::connection_refused)
+//        {
+//            this->derived()._do_disconnect(ec);
+//            return;
+//        }
+//
+//        if (!this->is_started())
+//            return;
+//
+//        this->buffer_.commit(bytes_recvd);
+//
+//        if (!ec)
+//        {
+//            this->reset_active_time();
+//
+//            std::string_view s = std::string_view(
+//                static_cast<std::string_view::const_pointer>(this->buffer_.data().data()), bytes_recvd);
+//
+//            if constexpr (!std::is_same_v<MatchCondition, use_kcp_t>)
+//            {
+//                this->derived()._fire_recv(this_ptr, std::move(s));
+//            }
+//            else
+//            {
+//                if (s.size() == sizeof(kcp::kcphdr))
+//                {
+//                    if (kcp::is_kcphdr_fin(s))
+//                    {
+//                        this->kcp_->send_fin_ = false;
+//                        this->derived()._do_disconnect(asio::error::eof);
+//                    }
+///*                    else if (kcp::is_kcphdr_synack(s, this->kcp_->seq_))
+//                    {
+//                        ZEPHYR_ASSERT(false);
+//                    }*/
+//                }
+//                else
+//                {
+//                    this->kcp_->_kcp_recv(this_ptr, s, this->buffer_);
+//                }
+//            }
+//        }
+//
+//        this->buffer_.consume(this->buffer_.size());
+//
+//        this->derived()._post_recv(std::move(this_ptr), condition);
+//    }
+//
+//#endif // XD_KCP
 
     inline void _fire_init()
     {

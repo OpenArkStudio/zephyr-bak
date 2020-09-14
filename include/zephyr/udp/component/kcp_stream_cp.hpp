@@ -26,13 +26,7 @@
 #include <zephyr/base/detail/util.hpp>
 #include <zephyr/base/detail/buffer_wrap.hpp>
 
-#ifdef XD_KCP
-#include <zephyr/udp/detail/xd_kcp_util.hpp>
-#else
 #include <zephyr/udp/detail/kcp_util.hpp>
-#endif
-
-#include <zephyr/util/packet.hpp>
 
 namespace zephyr::detail {
 /*
@@ -92,7 +86,7 @@ protected:
         this->_post_kcp_timer(std::move(this_ptr));
     }
 
-#ifdef XD_KCP
+//#ifdef XD_KCP
 
     inline void _kcp_stop(std::shared_ptr<derived_t> this_ptr)
     {
@@ -102,35 +96,35 @@ protected:
         // if is kcp mode, send FIN handshake before close
         if (this->send_fin_)
         {
-            xd_kcp::xd_kcphdr_fin hdr = xd_kcp::xd_make_kcphdr_fin(this->seq_, this->remote_id_, ec.value());
-            this->_xd_kcp_send_hdr((const void*)&hdr, sizeof(xd_kcp::xd_kcphdr_fin), ec);
+            kcp::kcphdr_fin hdr = kcp::make_kcphdr_fin(this->sync_id_, this->conv_id_);
+            this->_kcp_send_hdr((const void*)&hdr, sizeof(kcp::kcphdr_fin), ec);
         }
 
         this->kcp_timer_.cancel();
     }
 
-#else
-
-    inline void _kcp_stop(std::shared_ptr<derived_t> this_ptr)
-    {
-        detail::ignore::unused(this_ptr);
-
-        error_code ec;
-        // if is kcp mode, send FIN handshake before close
-        if (this->send_fin_)
-        {
-            this->_kcp_send_hdr(kcp::make_kcphdr_fin(0), ec);
-        }
-
-        this->kcp_timer_.cancel();
-    }
-
-#endif // XD_KCP
+//#else
+//
+//    inline void _kcp_stop(std::shared_ptr<derived_t> this_ptr)
+//    {
+//        detail::ignore::unused(this_ptr);
+//
+//        error_code ec;
+//        // if is kcp mode, send FIN handshake before close
+//        if (this->send_fin_)
+//        {
+//            this->_kcp_send_hdr(kcp::make_kcphdr_fin(0), ec);
+//        }
+//
+//        this->kcp_timer_.cancel();
+//    }
+//
+//#endif // XD_KCP
 
 protected:
-#ifdef XD_KCP
+//#ifdef XD_KCP
 
-    inline std::size_t _xd_kcp_send_hdr(const void* hdr, std::size_t hdr_len, error_code& ec)
+    inline std::size_t _kcp_send_hdr(const void* hdr, std::size_t hdr_len, error_code& ec)
     {
         std::size_t sent_bytes = 0;
         if constexpr (isSession)
@@ -145,25 +139,25 @@ protected:
         return sent_bytes;
     }
 
-#else
-
-    inline std::size_t _kcp_send_hdr(kcp::kcphdr hdr, error_code& ec)
-    {
-        std::size_t sent_bytes = 0;
-        if constexpr (isSession)
-        {
-            sent_bytes = derive.stream().send_to(
-                asio::buffer((const void*)&hdr, sizeof(kcp::kcphdr)), derive.remote_endpoint_, 0, ec);
-        }
-        else
-        {
-            sent_bytes = derive.stream().send(asio::buffer((const void*)&hdr, sizeof(kcp::kcphdr)), 0, ec);
-        }
-
-        return sent_bytes;
-    }
-
-#endif // XD_KCP
+//#else
+//
+//    inline std::size_t _kcp_send_hdr(kcp::kcphdr hdr, error_code& ec)
+//    {
+//        std::size_t sent_bytes = 0;
+//        if constexpr (isSession)
+//        {
+//            sent_bytes = derive.stream().send_to(
+//                asio::buffer((const void*)&hdr, sizeof(kcp::kcphdr)), derive.remote_endpoint_, 0, ec);
+//        }
+//        else
+//        {
+//            sent_bytes = derive.stream().send(asio::buffer((const void*)&hdr, sizeof(kcp::kcphdr)), 0, ec);
+//        }
+//
+//        return sent_bytes;
+//    }
+//
+//#endif // XD_KCP
 
     template<class Data, class Callback>
     inline bool _kcp_send(Data& data, Callback&& callback)
@@ -243,7 +237,7 @@ protected:
         kcp::ikcp_flush(this->kcp_);
     }
 
-#ifdef XD_KCP
+//#ifdef XD_KCP
 
     template<typename MatchCondition>
     inline void _post_handshake(std::shared_ptr<derived_t> self_ptr, condition_wrap<MatchCondition> condition)
@@ -256,29 +250,29 @@ protected:
                 // step 3 : server received syn from client (the first_ is the syn)
 
                 // step 4 : server send synack to client
-                xd_kcp::xd_kcphdr_syn* hdr = (xd_kcp::xd_kcphdr_syn*)(derive.first_.data());
+                auto* hdr = (kcp::kcphdr_syn*)(derive.first_.data());
                 const auto& key = derive.hash_key();
-                std::uint32_t conv =
+                auto conv =
                     fnv1a_hash<std::uint32_t>((const unsigned char* const) & key, std::uint32_t(sizeof(key)));
                 // set server-side conv_id
-                this->seq_ = conv;
-                this->remote_id_ = hdr->local_id;
+                this->conv_id_ = conv;
+                this->sync_id_ = hdr->sync_id;
                 // make syn-ack to client with server_conv_id and client_conv_id
-                xd_kcp::xd_kcphdr_ack synack = xd_kcp::xd_make_kcphdr_synack(this->remote_id_, this->seq_);
-                this->_xd_kcp_send_hdr((void*)&synack, sizeof(xd_kcp::xd_kcphdr_ack), ec);
+                kcp::kcphdr_ack synack = kcp::make_kcphdr_synack(this->sync_id_, this->conv_id_);
+                this->_kcp_send_hdr((void*)&synack, sizeof(kcp::kcphdr_ack), ec);
                 asio::detail::throw_error(ec);
 
-                this->_kcp_start(self_ptr, this->seq_);
+                this->_kcp_start(self_ptr, this->conv_id_);
                 this->_handle_handshake(ec, std::move(self_ptr), condition);
             }
             else
             {
                 // step 1 : client send syn to server
-                this->seq_ = static_cast<std::uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
+                this->sync_id_ = static_cast<std::uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
                     std::chrono::system_clock::now().time_since_epoch())
                                                             .count());
-                xd_kcp::xd_kcphdr_syn syn = xd_kcp::xd_make_kcphdr_syn(this->seq_);
-                this->_xd_kcp_send_hdr((const void*)&syn, sizeof(xd_kcp::xd_kcphdr_syn), ec);
+                kcp::kcphdr_syn syn = kcp::make_kcphdr_syn(this->sync_id_);
+                this->_kcp_send_hdr((const void*)&syn, sizeof(kcp::kcphdr_syn), ec);
                 asio::detail::throw_error(ec);
 
                 std::shared_ptr<asio::steady_timer> timer =
@@ -287,7 +281,7 @@ protected:
                         {
                             return false;
                         }
-                        this->_xd_kcp_send_hdr((const void*)&syn, sizeof(xd_kcp::xd_kcphdr_syn), ec);
+                        this->_kcp_send_hdr((const void*)&syn, sizeof(kcp::kcphdr_syn), ec);
                         if (ec)
                         {
                             set_last_error(ec);
@@ -326,10 +320,10 @@ protected:
                                     static_cast<std::string_view::const_pointer>(derive.buffer().data().data()),
                                     bytes_recvd);
                                 // Check whether the data is the correct handshake information
-                                if (xd_kcp::is_xd_kcphdr_synack(s, this->seq_))
+                                if (kcp::is_kcphdr_syn(s, this->sync_id_))
                                 {
-                                    std::uint32_t conv = ((xd_kcp::xd_kcphdr_ack*)(s.data()))->remote_id;
-                                    this->remote_id_ = conv;
+                                    std::uint32_t conv = ((kcp::kcphdr_ack*)(s.data()))->conv_id;
+                                    this->conv_id_ = conv;
                                     this->_kcp_start(this_ptr, conv);
                                     this->_handle_handshake(ec, std::move(this_ptr), condition);
                                 }
@@ -350,110 +344,110 @@ protected:
         }
     }
 
-#else
-
-    template<typename MatchCondition>
-    inline void _post_handshake(std::shared_ptr<derived_t> self_ptr, condition_wrap<MatchCondition> condition)
-    {
-        try
-        {
-            error_code ec;
-            if constexpr (isSession)
-            {
-                // step 3 : server recvd syn from client (the first_ is the syn)
-
-                // step 4 : server send synack to client
-                kcp::kcphdr* hdr = (kcp::kcphdr*)(derive.first_.data());
-                const auto& key = derive.hash_key();
-                std::uint32_t conv =
-                    fnv1a_hash<std::uint32_t>((const unsigned char* const) & key, std::uint32_t(sizeof(key)));
-                this->seq_ = conv;
-                kcp::kcphdr synack = kcp::make_kcphdr_synack(this->seq_, hdr->th_seq);
-                this->_kcp_send_hdr(synack, ec);
-                asio::detail::throw_error(ec);
-
-                this->_kcp_start(self_ptr, this->seq_);
-                this->_handle_handshake(ec, std::move(self_ptr), condition);
-            }
-            else
-            {
-                // step 1 : client send syn to server
-                this->seq_ = static_cast<std::uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
-                    std::chrono::system_clock::now().time_since_epoch())
-                                                            .count());
-                kcp::kcphdr syn = kcp::make_kcphdr_syn(this->seq_);
-                this->_kcp_send_hdr(syn, ec);
-                asio::detail::throw_error(ec);
-
-                std::shared_ptr<asio::steady_timer> timer =
-                    mktimer(derive.io(), std::chrono::milliseconds(500), [this, syn](error_code ec) {
-                        if (ec == asio::error::operation_aborted)
-                            return false;
-                        this->_kcp_send_hdr(syn, ec);
-                        if (ec)
-                        {
-                            set_last_error(ec);
-                            derive._do_disconnect(ec);
-                            return false;
-                        }
-                        return true;
-                    });
-
-                // step 2 : client wait for recv synack util connect timeout or recvd some data
-                derive.socket().async_receive(derive.buffer().prepare(derive.buffer().pre_size()),
-                    asio::bind_executor(derive.io().strand(),
-                        make_allocator(derive.rallocator(),
-                            [this, this_ptr = std::move(self_ptr), condition, timer = std::move(timer)](
-                                const error_code& ec, std::size_t bytes_recvd) mutable {
-                                try
-                                {
-                                    timer->cancel();
-                                }
-                                catch (system_error&)
-                                {
-                                }
-                                catch (std::exception&)
-                                {
-                                }
-
-                                if (ec)
-                                {
-                                    this->_handle_handshake(ec, std::move(this_ptr), condition);
-                                    return;
-                                }
-
-                                derive.buffer().commit(bytes_recvd);
-
-                                std::string_view s = std::string_view(
-                                    static_cast<std::string_view::const_pointer>(derive.buffer().data().data()),
-                                    bytes_recvd);
-
-                                // Check whether the data is the correct handshake information
-                                if (kcp::is_kcphdr_synack(s, this->seq_))
-                                {
-                                    std::uint32_t conv = ((kcp::kcphdr*)(s.data()))->th_seq;
-
-                                    this->_kcp_start(this_ptr, conv);
-                                    this->_handle_handshake(ec, std::move(this_ptr), condition);
-                                }
-                                else
-                                {
-                                    this->_handle_handshake(
-                                        asio::error::no_protocol_option, std::move(this_ptr), condition);
-                                }
-
-                                derive.buffer().consume(bytes_recvd);
-                            })));
-            }
-        }
-        catch (system_error& e)
-        {
-            set_last_error(e);
-            derive._do_disconnect(e.code());
-        }
-    }
-
-#endif // XD_KCP
+//#else
+//
+//    template<typename MatchCondition>
+//    inline void _post_handshake(std::shared_ptr<derived_t> self_ptr, condition_wrap<MatchCondition> condition)
+//    {
+//        try
+//        {
+//            error_code ec;
+//            if constexpr (isSession)
+//            {
+//                // step 3 : server recvd syn from client (the first_ is the syn)
+//
+//                // step 4 : server send synack to client
+//                kcp::kcphdr* hdr = (kcp::kcphdr*)(derive.first_.data());
+//                const auto& key = derive.hash_key();
+//                std::uint32_t conv =
+//                    fnv1a_hash<std::uint32_t>((const unsigned char* const) & key, std::uint32_t(sizeof(key)));
+//                this->seq_ = conv;
+//                kcp::kcphdr synack = kcp::make_kcphdr_synack(this->seq_, hdr->th_seq);
+//                this->_kcp_send_hdr(synack, ec);
+//                asio::detail::throw_error(ec);
+//
+//                this->_kcp_start(self_ptr, this->seq_);
+//                this->_handle_handshake(ec, std::move(self_ptr), condition);
+//            }
+//            else
+//            {
+//                // step 1 : client send syn to server
+//                this->seq_ = static_cast<std::uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
+//                    std::chrono::system_clock::now().time_since_epoch())
+//                                                            .count());
+//                kcp::kcphdr syn = kcp::make_kcphdr_syn(this->seq_);
+//                this->_kcp_send_hdr(syn, ec);
+//                asio::detail::throw_error(ec);
+//
+//                std::shared_ptr<asio::steady_timer> timer =
+//                    mktimer(derive.io(), std::chrono::milliseconds(500), [this, syn](error_code ec) {
+//                        if (ec == asio::error::operation_aborted)
+//                            return false;
+//                        this->_kcp_send_hdr(syn, ec);
+//                        if (ec)
+//                        {
+//                            set_last_error(ec);
+//                            derive._do_disconnect(ec);
+//                            return false;
+//                        }
+//                        return true;
+//                    });
+//
+//                // step 2 : client wait for recv synack util connect timeout or recvd some data
+//                derive.socket().async_receive(derive.buffer().prepare(derive.buffer().pre_size()),
+//                    asio::bind_executor(derive.io().strand(),
+//                        make_allocator(derive.rallocator(),
+//                            [this, this_ptr = std::move(self_ptr), condition, timer = std::move(timer)](
+//                                const error_code& ec, std::size_t bytes_recvd) mutable {
+//                                try
+//                                {
+//                                    timer->cancel();
+//                                }
+//                                catch (system_error&)
+//                                {
+//                                }
+//                                catch (std::exception&)
+//                                {
+//                                }
+//
+//                                if (ec)
+//                                {
+//                                    this->_handle_handshake(ec, std::move(this_ptr), condition);
+//                                    return;
+//                                }
+//
+//                                derive.buffer().commit(bytes_recvd);
+//
+//                                std::string_view s = std::string_view(
+//                                    static_cast<std::string_view::const_pointer>(derive.buffer().data().data()),
+//                                    bytes_recvd);
+//
+//                                // Check whether the data is the correct handshake information
+//                                if (kcp::is_kcphdr_synack(s, this->seq_))
+//                                {
+//                                    std::uint32_t conv = ((kcp::kcphdr*)(s.data()))->th_seq;
+//
+//                                    this->_kcp_start(this_ptr, conv);
+//                                    this->_handle_handshake(ec, std::move(this_ptr), condition);
+//                                }
+//                                else
+//                                {
+//                                    this->_handle_handshake(
+//                                        asio::error::no_protocol_option, std::move(this_ptr), condition);
+//                                }
+//
+//                                derive.buffer().consume(bytes_recvd);
+//                            })));
+//            }
+//        }
+//        catch (system_error& e)
+//        {
+//            set_last_error(e);
+//            derive._do_disconnect(e.code());
+//        }
+//    }
+//
+//#endif // XD_KCP
 
     template<typename MatchCondition>
     inline void _handle_handshake(
@@ -485,48 +479,6 @@ protected:
         }
     }
 
-#ifdef XD_KCP
-
-    static int _kcp_output(const char* buf, int len, kcp::ikcpcb* kcp, void* user)
-    {
-        std::ignore = kcp;
-
-        kcp_stream_cp* zhis = ((kcp_stream_cp*)user);
-
-        derived_t& derive = zhis->derive;
-
-        std::uint32_t kcphdr_id = 0;
-        if constexpr (isSession)
-        {
-            kcphdr_id = zhis->remote_id_;
-        }
-        else
-        {
-            kcphdr_id = zhis->seq_;
-        }
-        // add custom header before normal data
-        xd_kcp::xd_kcphdr_msg hdr = xd_kcp::xd_make_kcphdr_msg(kcphdr_id);
-        static thread_local BigPacket packet;
-        packet.init();
-        packet.writeUINT8(hdr.protocal_type);
-        packet.writeUINT32(hdr.local_id);
-        packet.writeBinary(buf, len);
-
-        error_code ec;
-        if constexpr (isSession)
-        {
-            derive.stream().send_to(asio::buffer(packet.getData(), packet.getPos()), derive.remote_endpoint_, 0, ec);
-        }
-        else
-        {
-            derive.stream().send(asio::buffer(packet.getData(), packet.getPos()), 0, ec);
-        }
-
-        return 0;
-    }
-
-#else
-
     static int _kcp_output(const char* buf, int len, kcp::ikcpcb* kcp, void* user)
     {
         std::ignore = kcp;
@@ -548,19 +500,16 @@ protected:
         return 0;
     }
 
-#endif // XD_KCP
-
 protected:
     derived_t& derive;
 
     io_t& kcp_io_;
 
     kcp::ikcpcb* kcp_ = nullptr;
-#ifdef XD_KCP
-    std::uint32_t remote_id_ = 0; // client_id
-#endif
 
-    std::uint32_t seq_ = 0; // local_id
+    // for kcp handshaking
+    std::uint32_t sync_id_ = 0; // sync_id
+    std::uint32_t conv_id_ = 0; // conv_id
 
     bool send_fin_ = true;
 

@@ -18,11 +18,7 @@
 #include <zephyr/base/session.hpp>
 #include <zephyr/udp/impl/udp_send_op.hpp>
 
-#ifdef XD_KCP
-#include <zephyr/udp/detail/xd_kcp_util.hpp>
-#else
 #include <zephyr/udp/detail/kcp_util.hpp>
-#endif
 
 namespace zephyr::detail {
 template<class>
@@ -171,11 +167,11 @@ public:
     }
 
     /**
-		 * @function : get the kcp pointer, just used for kcp mode
-		 * default mode : ikcp_nodelay(kcp, 0, 10, 0, 0);
-		 * generic mode : ikcp_nodelay(kcp, 0, 10, 0, 1);
-		 * fast    mode : ikcp_nodelay(kcp, 1, 10, 2, 1);
-		 */
+     * @function : get the kcp pointer, just used for kcp mode
+     * default mode : ikcp_nodelay(kcp, 0, 10, 0, 0);
+     * generic mode : ikcp_nodelay(kcp, 0, 10, 0, 1);
+     * fast    mode : ikcp_nodelay(kcp, 1, 10, 2, 1);
+     */
     inline kcp::ikcpcb* kcp()
     {
         return (this->kcp_ ? this->kcp_->kcp_ : nullptr);
@@ -191,37 +187,6 @@ protected:
         this->reset_connect_time();
         this->reset_active_time();
     }
-
-#ifdef XD_KCP
-
-    template<typename MatchCondition>
-    inline void _handle_connect(
-        const error_code& ec, std::shared_ptr<derived_t> this_ptr, condition_wrap<MatchCondition> condition)
-    {
-        if constexpr (std::is_same_v<MatchCondition, use_kcp_t>)
-        {
-            // step 3 : server received syn from client (the first_ is syn)
-            // Check whether the first_ packet is SYN handshake
-            if (xd_kcp::is_xd_kcphdr_syn(this->first_))
-            {
-                this->kcp_ = std::make_unique<kcp_stream_cp<derived_t, true>>(this->derived(), this->io_);
-                this->kcp_->_post_handshake(std::move(this_ptr), std::move(condition));
-            }
-            else
-            {
-                //set_last_error(asio::error::no_protocol_option);
-                //this->derived()._fire_handshake(this_ptr, asio::error::no_protocol_option);
-                this->derived()._do_disconnect(asio::error::no_protocol_option);
-            }
-        }
-        else
-        {
-            this->kcp_.reset();
-            this->derived()._done_connect(ec, std::move(this_ptr), std::move(condition));
-        }
-    }
-
-#else
 
     template<typename MatchCondition>
     inline void _handle_connect(
@@ -250,7 +215,32 @@ protected:
         }
     }
 
-#endif
+//    template<typename MatchCondition>
+//    inline void _handle_connect(
+//        const error_code& ec, std::shared_ptr<derived_t> this_ptr, condition_wrap<MatchCondition> condition)
+//    {
+//        if constexpr (std::is_same_v<MatchCondition, use_kcp_t>)
+//        {
+//            // step 3 : server received syn from client (the first_ is syn)
+//            // Check whether the first_ packet is SYN handshake
+//            if (kcp::is_kcphdr_syn(this->first_))
+//            {
+//                this->kcp_ = std::make_unique<kcp_stream_cp<derived_t, true>>(this->derived(), this->io_);
+//                this->kcp_->_post_handshake(std::move(this_ptr), std::move(condition));
+//            }
+//            else
+//            {
+//                //set_last_error(asio::error::no_protocol_option);
+//                //this->derived()._fire_handshake(this_ptr, asio::error::no_protocol_option);
+//                this->derived()._do_disconnect(asio::error::no_protocol_option);
+//            }
+//        }
+//        else
+//        {
+//            this->kcp_.reset();
+//            this->derived()._done_connect(ec, std::move(this_ptr), std::move(condition));
+//        }
+//    }
 
     template<typename MatchCondition>
     inline void _done_connect(
@@ -398,8 +388,6 @@ protected:
         return this->kcp_->_kcp_send(data, std::forward<Callback>(callback));
     }
 
-#ifdef XD_KCP
-
     template<typename MatchCondition>
     inline void _handle_recv(const error_code& ec, std::string_view s, std::shared_ptr<derived_t>& this_ptr,
         condition_wrap<MatchCondition> condition)
@@ -415,8 +403,7 @@ protected:
         }
         else
         {
-            // TODO: check
-            if (xd_kcp::is_xd_kcphdr_fin(s, this->kcp_->remote_id_))
+            if (kcp::is_kcphdr_fin(s, this->kcp_->sync_id_, this->kcp_->conv_id_))
             {
                 this->kcp_->send_fin_ = false;
                 this->derived()._do_disconnect(asio::error::eof);
@@ -424,78 +411,73 @@ protected:
             // Check whether the packet is SYN handshake
             // It is possible that the client did not receive the synack package, then the client
             // will resend the syn package, so we just need to reply to the synack package directly.
-            else if (xd_kcp::is_xd_kcphdr_syn(s))
+            else if (kcp::is_kcphdr_syn(s))
             {
                 ZEPHYR_ASSERT(this->kcp_ && this->kcp_->kcp_);
                 // step 4 : server send synack to client
-                xd_kcp::xd_kcphdr_syn* hdr = (xd_kcp::xd_kcphdr_syn*)(s.data());
-                this->kcp_->remote_id_ = hdr->local_id;
-                xd_kcp::xd_kcphdr_ack synack = xd_kcp::xd_make_kcphdr_synack(this->kcp_->remote_id_, this->kcp_->seq_);
+                kcp::kcphdr_syn* hdr = (kcp::kcphdr_syn*)(s.data());
+                this->kcp_->sync_id_ = hdr->sync_id;
+                kcp::kcphdr_ack synack = kcp::make_kcphdr_synack(this->kcp_->sync_id_, this->kcp_->conv_id_);
                 error_code ed;
-                this->kcp_->_xd_kcp_send_hdr((const void*)&synack, sizeof(xd_kcp::xd_kcphdr_ack), ed);
+                this->kcp_->_kcp_send_hdr((const void*)&synack, sizeof(kcp::kcphdr_ack), ed);
                 if (ed)
                 {
                     this->derived()._do_disconnect(ed);
                 }
             }
-            else if (xd_kcp::is_xd_kcphdr_msg(s, this->kcp_->remote_id_))
-            {
-                s.remove_prefix(std::min(sizeof(xd_kcp::xd_kcphdr_msg), s.size()));
-                this->kcp_->_kcp_recv(this_ptr, s, this->buffer_ref_);
-            }
-        }
-    }
-
-#else
-
-    template<typename MatchCondition>
-    inline void _handle_recv(const error_code& ec, std::string_view s, std::shared_ptr<derived_t>& this_ptr,
-        condition_wrap<MatchCondition> condition)
-    {
-        if (!this->is_started())
-            return;
-
-        this->reset_active_time();
-
-        if constexpr (!std::is_same_v<MatchCondition, use_kcp_t>)
-        {
-            this->derived()._fire_recv(this_ptr, std::move(s));
-        }
-        else
-        {
-            if (s.size() == sizeof(kcp::kcphdr))
-            {
-
-                if (kcp::is_kcphdr_fin(s))
-                {
-                    this->kcp_->send_fin_ = false;
-                    this->derived()._do_disconnect(asio::error::eof);
-                }
-                // Check whether the packet is SYN handshake
-                // It is possible that the client did not receive the synack package, then the client
-                // will resend the syn package, so we just need to reply to the synack package directly.
-                else if (kcp::is_kcphdr_syn(s))
-                {
-                    ZEPHYR_ASSERT(this->kcp_ && this->kcp_->kcp_);
-                    // step 4 : server send synack to client
-                    kcp::kcphdr* hdr = (kcp::kcphdr*)(s.data());
-                    kcp::kcphdr synack = kcp::make_kcphdr_synack(this->kcp_->seq_, hdr->th_seq);
-                    error_code ed;
-                    this->kcp_->_kcp_send_hdr(synack, ed);
-                    if (ed)
-                    {
-                        this->derived()._do_disconnect(ed);
-                    }
-                }
-            }
-            else
+            else if (kcp::is_kcphdr_msg(s))
             {
                 this->kcp_->_kcp_recv(this_ptr, s, this->buffer_ref_);
             }
         }
     }
 
-#endif // XD_KCP
+//    template<typename MatchCondition>
+//    inline void _handle_recv(const error_code& ec, std::string_view s, std::shared_ptr<derived_t>& this_ptr,
+//        condition_wrap<MatchCondition> condition)
+//    {
+//        if (!this->is_started())
+//            return;
+//
+//        this->reset_active_time();
+//
+//        if constexpr (!std::is_same_v<MatchCondition, use_kcp_t>)
+//        {
+//            this->derived()._fire_recv(this_ptr, std::move(s));
+//        }
+//        else
+//        {
+//            if (s.size() == sizeof(kcp::kcphdr))
+//            {
+//
+//                if (kcp::is_kcphdr_fin(s))
+//                {
+//                    this->kcp_->send_fin_ = false;
+//                    this->derived()._do_disconnect(asio::error::eof);
+//                }
+//                // Check whether the packet is SYN handshake
+//                // It is possible that the client did not receive the synack package, then the client
+//                // will resend the syn package, so we just need to reply to the synack package directly.
+//                else if (kcp::is_kcphdr_syn(s))
+//                {
+//                    ZEPHYR_ASSERT(this->kcp_ && this->kcp_->kcp_);
+//                    // step 4 : server send synack to client
+//                    kcp::kcphdr* hdr = (kcp::kcphdr*)(s.data());
+//                    kcp::kcphdr synack = kcp::make_kcphdr_synack(this->kcp_->seq_, hdr->th_seq);
+//                    error_code ed;
+//                    this->kcp_->_kcp_send_hdr(synack, ed);
+//                    if (ed)
+//                    {
+//                        this->derived()._do_disconnect(ed);
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                this->kcp_->_kcp_recv(this_ptr, s, this->buffer_ref_);
+//            }
+//        }
+//    }
 
     inline void _fire_recv(std::shared_ptr<derived_t>& this_ptr, std::string_view s)
     {

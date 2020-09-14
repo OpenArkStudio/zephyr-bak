@@ -57,7 +57,7 @@ option(ZEPHYR_ENABLE_RPC "Enable rpc" OFF)
 option(ZEPHYR_BUILD_TESTS "Enable build tests" ON)
 option(ZEPHYR_BUILD_EXAMPLES "Enable build examples" ON)
 option(ZEPHYR_BUILD_BENCHMARK "Enable build benchmarks" ON)
-option(ZEPHYR_USE_XD_KCP "Enable X.D. KCP" OFF)
+#option(ZEPHYR_USE_XD_KCP "Enable X.D. KCP" OFF)
 
 #---------------------------------------------------------------------------------------
 # Get version number.
@@ -91,9 +91,9 @@ else (UNIX)
 endif ()
 
 
-if (ZEPHYR_USE_XD_KCP)
-    add_definitions(-DXD_KCP) # XD KCP
-endif ()
+#if (ZEPHYR_USE_XD_KCP)
+#    add_definitions(-DXD_KCP) # XD KCP
+#endif ()
 
 if (ASIO_STANDALONE)
     # standalone asio
