@@ -68,14 +68,14 @@ public:
      */
     explicit udp_session_impl_t(session_mgr_t<derived_t>& sessions, listener_t& listener, io_t& rwio,
         std::size_t init_buffer_size, std::size_t max_buffer_size, zephyr::buffer_wrap<zephyr::linear_buffer>& buffer,
-        socket_t socket, asio::ip::udp::endpoint& endpoint)
+        socket_t socket, asio::ip::udp::endpoint& endpoint, std::size_t silence_timeout)
         : super(sessions, listener, rwio, init_buffer_size, max_buffer_size, socket)
         , udp_send_op<derived_t, true>()
         , buffer_ref_(buffer)
         , remote_endpoint_(endpoint)
         , wallocator_()
     {
-        this->silence_timeout_ = std::chrono::milliseconds(udp_silence_timeout);
+        this->silence_timeout_ = std::chrono::milliseconds(silence_timeout);
     }
 
     /**

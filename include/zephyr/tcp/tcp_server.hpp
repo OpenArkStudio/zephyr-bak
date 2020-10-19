@@ -36,6 +36,7 @@ namespace zephyr::detail
 		 * @constructor
 		 */
 		explicit tcp_server_impl_t(
+            std::size_t silence_timeout = tcp_silence_timeout,
 			std::size_t init_buffer_size = tcp_frame_size,
 			std::size_t max_buffer_size = (std::numeric_limits<std::size_t>::max)(),
 			std::size_t concurrency = std::thread::hardware_concurrency() * 2
@@ -46,6 +47,7 @@ namespace zephyr::detail
 			, counter_timer_(this->io_.context())
 			, init_buffer_size_(init_buffer_size)
 			, max_buffer_size_(max_buffer_size)
+            , silence_timeout_(silence_timeout)
 		{
 		}
 
@@ -420,7 +422,7 @@ namespace zephyr::detail
 		inline std::shared_ptr<session_t> _make_session(Args&&... args)
 		{
 			return std::make_shared<session_t>(std::forward<Args>(args)..., this->sessions_, this->listener_,
-				this->iopool_.get(), this->init_buffer_size_, this->max_buffer_size_);
+				this->iopool_.get(), this->init_buffer_size_, this->max_buffer_size_, this->silence_timeout_);
 		}
 
 		template<typename MatchCondition>
@@ -513,6 +515,9 @@ namespace zephyr::detail
 		std::size_t             init_buffer_size_ = tcp_frame_size;
 
 		std::size_t             max_buffer_size_ = (std::numeric_limits<std::size_t>::max)();
+
+        /// silence timeout milliseconds.
+        std::size_t             silence_timeout_ = tcp_silence_timeout;
 	};
 }
 

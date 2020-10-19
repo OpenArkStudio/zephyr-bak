@@ -62,7 +62,8 @@ namespace zephyr::detail
 			listener_t & listener,
 			io_t & rwio,
 			std::size_t init_buffer_size,
-			std::size_t max_buffer_size
+			std::size_t max_buffer_size,
+            std::size_t silence_timeout
 		)
 			: super(sessions, listener, rwio, init_buffer_size, max_buffer_size, rwio.context())
 			, tcp_keepalive_cp<socket_t>(this->socket_)
@@ -71,15 +72,13 @@ namespace zephyr::detail
 			, rallocator_()
 			, wallocator_()
 		{
-			this->silence_timeout(std::chrono::milliseconds(tcp_silence_timeout));
+			this->silence_timeout(std::chrono::milliseconds(silence_timeout));
 		}
 
 		/**
 		 * @destructor
 		 */
-		~tcp_session_impl_t()
-		{
-		}
+		~tcp_session_impl_t() = default;
 
 	protected:
 		/**
