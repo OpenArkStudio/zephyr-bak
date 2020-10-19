@@ -38,12 +38,14 @@ public:
     /**
 		 * @constructor
 		 */
-    explicit udp_server_impl_t(std::size_t init_buffer_size = udp_frame_size,
+    explicit udp_server_impl_t(std::size_t silence_timeout = udp_silence_timeout,
+        std::size_t init_buffer_size = udp_frame_size,
         std::size_t max_buffer_size = (std::numeric_limits<std::size_t>::max)())
         : super(1)
         , acceptor_(this->io_.context())
         , remote_endpoint_()
         , buffer_(init_buffer_size, max_buffer_size)
+        , silence_timeout_(udp_silence_timeout)
     {
     }
 
@@ -589,7 +591,7 @@ protected:
     inline std::shared_ptr<session_t> _make_session(Args&&... args)
     {
         return std::make_shared<session_t>(std::forward<Args>(args)..., this->sessions_, this->listener_, this->io_,
-            this->buffer_.pre_size(), this->buffer_.max_size(), this->buffer_, this->acceptor_, this->remote_endpoint_);
+            this->buffer_.pre_size(), this->buffer_.max_size(), this->buffer_, this->acceptor_, this->remote_endpoint_, this->silence_timeout_);
     }
 
     template<typename MatchCondition>
@@ -626,6 +628,8 @@ protected:
 
     /// buffer
     zephyr::buffer_wrap<zephyr::linear_buffer> buffer_;
+
+    std::size_t silence_timeout_ = udp_silence_timeout;
 };
 } // namespace zephyr::detail
 

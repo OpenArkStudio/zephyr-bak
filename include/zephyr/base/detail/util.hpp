@@ -60,7 +60,7 @@ namespace zephyr::detail
 	 * The read buffer has to be at least as large
 	 * as the largest possible control frame including
 	 * the frame header.
-	 * refrenced from beast stream.hpp
+	 * referenced from beast stream.hpp
 	 */
 	static std::size_t constexpr  tcp_frame_size = 1536;
 	static std::size_t constexpr  udp_frame_size = 1024;
